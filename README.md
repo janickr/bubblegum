@@ -24,6 +24,7 @@ public class TestApp implements Routes {
                 // or req.forward("hello.jsp", resp);
             }
         });
+
     }
 }
 ```
@@ -58,5 +59,5 @@ Copyright and License
 ---------------------
 Copyright &copy; 2012-, Janick Reynders. Licensed under [MIT License].
 
-[MIT License]: https://github.com/janickr/shortcuttranslator/raw/master/LICENSE.txt
+[MIT License]: https://github.com/janickr/bubblegum/raw/master/LICENSE.txt
 
