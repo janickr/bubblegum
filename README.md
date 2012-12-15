@@ -8,7 +8,7 @@ Usage
 
 1) Implement the Routes interface
 
-'''java
+```java
 package be.janickreynders.test;
 
 import be.janickreynders.bubblegum.*;
@@ -26,11 +26,11 @@ public class TestApp implements Routes {
         });
     }
 }
-'''
+```
 
 2) Add BubblegumFilter to your web.xml
 
-'''xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
@@ -50,7 +50,7 @@ public class TestApp implements Routes {
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 </web-app>
-'''
+```
 
 3) That's it! Deploy and point your browser to http://localhost/hello/chuck
 
