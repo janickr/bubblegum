@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="bubblegum:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/bubblegum_jar</output-path>
+    <root id="archive" name="bubblegum.jar">
+      <element id="module-output" name="bubblegum" />
+    </root>
+  </artifact>
+</component>
