@@ -23,32 +23,6 @@
 
 package be.janickreynders.bubblegum;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
-
-public class Application {
-    private List<Route> routes = new ArrayList<Route>();
-
-    boolean handle(HttpServletRequest req, HttpServletResponse resp) {
-        for (Route route : routes) {
-            Match match = route.getMatch(req);
-            if (match.isMatch()) {
-                route.getHandler().handle(new Request(req, match.getParams()), new Response(resp));
-
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    public void get(String route, String contentType, Handler handler) {
-        routes.add(new Route("get", route, contentType, handler));
-    }
-
-    public void post(String route, String contentType, Handler handler) {
-        routes.add(new Route("post", route, contentType, handler));
-    }
+public interface ExceptionMatcher {
+    boolean matches(Exception e);
 }

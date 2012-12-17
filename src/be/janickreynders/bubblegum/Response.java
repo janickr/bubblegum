@@ -37,31 +37,19 @@ public class Response {
         return resp;
     }
 
-    public void ok(CharSequence c) {
-        try {
-            resp.getWriter().append(c);
-        } catch (IOException e) {
-            throw new IORuntimeException(e);
-        }
+    public void ok(CharSequence c) throws IOException {
+        resp.getWriter().append(c);
     }
 
-    public void error(int code) {
-        try {
-            resp.sendError(code);
-        } catch (IOException e) {
-            throw new IORuntimeException(e);
-        }
+    public void error(int code) throws IOException {
+        resp.sendError(code);
     }
 
     public void type(String contentType) {
         resp.setContentType(contentType);
     }
 
-    public void redirect(String url) {
-        try {
-            resp.sendRedirect(url);
-        } catch (IOException e) {
-            throw new IORuntimeException(e);
-        }
+    public void redirect(String url) throws IOException {
+        resp.sendRedirect(url);
     }
 }

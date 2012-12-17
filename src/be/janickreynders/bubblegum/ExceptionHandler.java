@@ -23,36 +23,21 @@
 
 package be.janickreynders.bubblegum;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+class ExceptionHandler {
+    private final ExceptionMatcher matcher;
+    private final Handler handler;
 
-public class BubblegumFilter implements Filter {
-    private Application app = new Application();
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        getRoutes(filterConfig).init(app);
+    ExceptionHandler(ExceptionMatcher matcher, Handler handler) {
+        this.matcher = matcher;
+        this.handler = handler;
     }
 
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        if (!app.handle((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse))
-            filterChain.doFilter(servletRequest, servletResponse);
+    public boolean matches(Exception e) {
+        return matcher.matches(e);
     }
 
-    protected Routes getRoutes(FilterConfig filterConfig) throws ServletException {
-        try {
-            String name = filterConfig.getInitParameter("routes");
-            return (Routes) Class.forName(name).newInstance();
-        } catch (Exception e) {
-            throw new ServletException(e);
-        }
-    }
 
-    @Override
-    public void destroy() {
+    public void handle(Request request, Response response) throws Exception {
+        handler.handle(request, response);
     }
-
 }

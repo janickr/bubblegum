@@ -1,25 +1,26 @@
 Bubblegum - a micro web framework for java
 ==========================================
 
-Very lightweight web framework. It's only purpose is to match routes to handlers. No other dependencies.
+Very small web framework: less than 20KB, does not depend on jars other than the servlet api.
+It's only purpose is to match routes to handlers.
 
 Usage
 -----
 
-1) Implement the Routes interface
+1) Implement the App interface
 
 ```java
 package be.janickreynders.test;
 
 import be.janickreynders.bubblegum.*;
 
-public class TestApp implements Routes {
+public class TestApp implements App {
     @Override
-    public void init(Application app) {
+    public void init(Config app) {
 
-        app.get("/hello/:name", "text/html", new Handler() {
+        app.get("/hello/:name", new Handler() {
             @Override
-            public void handle(Request req, Response resp) {
+            public void handle(Request req, Response resp) throws Exception {
                 resp.ok("<html><body>Hello " + req.param("name")+ "</html></body>");
                 // or req.forward("hello.jsp", resp);
             }
@@ -29,7 +30,7 @@ public class TestApp implements Routes {
 }
 ```
 
-2) Add BubblegumFilter to your web.xml
+2) Add Bubblegum to your web.xml
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -38,16 +39,16 @@ public class TestApp implements Routes {
            version="2.5">
 
     <filter>
-        <filter-name>BubblegumFilter</filter-name>
-        <filter-class>be.janickreynders.bubblegum.BubblegumFilter</filter-class>
+        <filter-name>Bubblegum</filter-name>
+        <filter-class>be.janickreynders.bubblegum.Bubblegum</filter-class>
         <init-param>
-            <param-name>routes</param-name>
+            <param-name>app</param-name>
             <param-value>be.janickreynders.test.TestApp</param-value>
         </init-param>
     </filter>
 
     <filter-mapping>
-        <filter-name>BubblegumFilter</filter-name>
+        <filter-name>Bubblegum</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 </web-app>

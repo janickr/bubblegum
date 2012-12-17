@@ -33,27 +33,15 @@ public class Match {
     private boolean match;
     private Map<String, String> params = new HashMap<String, String>();
 
-    public static Match create(Route route, HttpServletRequest request) {
-        if (!route.getMethod().equalsIgnoreCase(request.getMethod())) return new Match();
-        if (!request.getHeader("Accept").contains(route.getContentType())) return new Match();
-
-        List<String> parameterNames = route.getParamNames();
-
-        Matcher matcher = createMatcher(route, request);
-
+    public static Match match(Map<String, String> params) {
         Match match = new Match();
-        if (matcher.matches()) {
-            match.match = true;
-            for (int i = 0; i < matcher.groupCount(); i++) {
-                match.params.put(parameterNames.get(i), matcher.group(i+1));
-            }
-        }
-
+        match.match = true;
+        match.params = params;
         return match;
     }
 
-    private static Matcher createMatcher(Route route, HttpServletRequest request) {
-        return route.getPattern().matcher(request.getRequestURI());
+    public static Match noMatch() {
+        return new Match();
     }
 
     public boolean isMatch() {

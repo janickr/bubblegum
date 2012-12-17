@@ -24,5 +24,5 @@
 package be.janickreynders.bubblegum;
 
 public interface Handler {
-    void handle(Request req, Response resp);
+    void handle(Request req, Response resp) throws Exception;
 }

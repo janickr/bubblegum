@@ -26,22 +26,21 @@ package be.janickreynders.bubblegum;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Route {
-    private final String method;
-    private final String route;
-    private final String contentType;
     private final Handler handler;
     private final List<String> paramNames;
     private final Pattern pattern;
+    private final RequestMatcher matcher;
 
 
-    public Route(String method, String route, String contentType, Handler handler) {
-        this.method = method;
-        this.route = route;
-        this.contentType = contentType;
+    public Route(String route, Handler handler, RequestMatcher matcher) {
+        this.matcher = matcher;
         this.handler = handler;
         this.paramNames = getParamNames(route);
         this.pattern = createPattern(route);
@@ -59,27 +58,23 @@ public class Route {
         return Pattern.compile(route.replaceAll(":\\w+", "([^/]+)"));
     }
 
-    public Match getMatch(HttpServletRequest url) {
-        return Match.create(this, url);
+    public Match getMatch(HttpServletRequest req) {
+        Matcher regex = pattern.matcher(getPath(req));
+        if (! (regex.matches() && matcher.matches(req))) return Match.noMatch();
+
+        Map<String, String> params = new HashMap<String, String>();
+        for (int i = 0; i < regex.groupCount(); i++) {
+            params.put(paramNames.get(i), regex.group(i+1));
+        }
+        return Match.match(params);
+    }
+
+    private String getPath(HttpServletRequest req) {
+        return req.getRequestURI().substring(req.getContextPath().length());
     }
 
     public Handler getHandler() {
         return handler;
     }
 
-    public List<String> getParamNames() {
-        return paramNames;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public Pattern getPattern() {
-        return pattern;
-    }
 }

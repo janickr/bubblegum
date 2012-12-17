@@ -23,44 +23,6 @@
 
 package be.janickreynders.bubblegum;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-public class Request {
-    private final HttpServletRequest req;
-    private final Map<String, String> params;
-
-    public Request(HttpServletRequest req, Map<String, String> params) {
-        this.req = req;
-        this.params = params;
-    }
-
-    public HttpServletRequest raw() {
-        return req;
-    }
-
-    public String param(String name) {
-        return params.get(name);
-    }
-
-    public void attribute(String name, Object val) {
-        req.setAttribute(name, val);
-    }
-
-    public void forward(String url, Response response) throws IOException, ServletException {
-        req.setAttribute("bubblegumParams", params);
-        req.getRequestDispatcher(url).forward(req, response.raw());
-    }
-
-    public Set<String> queryParams() {
-        return new HashSet<String>(req.getParameterMap().keySet());
-    }
-
-    public String queryParam(String name) {
-        return req.getParameter(name);
-    }
+public interface App {
+    void init(Config app);
 }

@@ -23,8 +23,26 @@
 
 package be.janickreynders.bubblegum;
 
-public class IORuntimeException extends RuntimeException {
-    public IORuntimeException(Throwable cause) {
-        super(cause);
+import javax.servlet.http.HttpServletRequest;
+
+public abstract class RequestMatcher {
+    public abstract boolean matches(HttpServletRequest req);
+
+    public RequestMatcher and(final RequestMatcher matcher) {
+        return new RequestMatcher() {
+            @Override
+            public boolean matches(HttpServletRequest req) {
+                return RequestMatcher.this.matches(req) && matcher.matches(req);
+            }
+        };
+    }
+
+    public RequestMatcher or(final RequestMatcher matcher) {
+        return new RequestMatcher() {
+            @Override
+            public boolean matches(HttpServletRequest req) {
+                return RequestMatcher.this.matches(req) || matcher.matches(req);
+            }
+        };
     }
 }

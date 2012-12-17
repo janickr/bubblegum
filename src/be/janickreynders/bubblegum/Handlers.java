@@ -23,6 +23,22 @@
 
 package be.janickreynders.bubblegum;
 
-public interface Routes {
-    void init(Application app);
+public class Handlers {
+    public static Handler error(final int httpError) {
+        return new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                resp.error(httpError);
+            }
+        };
+    }
+
+    public static Handler forward(final String url) {
+        return new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                req.forward(url, resp);
+            }
+        };
+    }
 }
