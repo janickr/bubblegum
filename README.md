@@ -16,9 +16,9 @@ import be.janickreynders.bubblegum.*;
 
 public class TestApp implements App {
     @Override
-    public void init(Config app) {
+    public void init(Config on) {
 
-        app.get("/hello/:name", new Handler() {
+        on.get("/hello/:name", new Handler() {
             @Override
             public void handle(Request req, Response resp) throws Exception {
                 resp.ok("<html><body>Hello " + req.param("name")+ "</html></body>");
