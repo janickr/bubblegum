@@ -55,7 +55,7 @@ public class Route {
     }
 
     private static Pattern createPattern(String route) {
-        return Pattern.compile(route.replaceAll(":\\w+", "([^/]+)"));
+        return Pattern.compile(route.replaceAll(":\\w+", "([^/]+)") + "/?");
     }
 
     public Match getMatch(HttpServletRequest req) {
