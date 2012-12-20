@@ -23,6 +23,6 @@
 
 package be.janickreynders.bubblegum;
 
-public interface ExceptionMatcher {
-    boolean matches(Exception e);
+public interface Filter {
+    public void handle(Request req, Response resp, Chain chain) throws Exception;
 }

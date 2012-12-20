@@ -23,45 +23,17 @@
 
 package be.janickreynders.bubblegum;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
-
+import static be.janickreynders.bubblegum.Filters.handler;
 import static be.janickreynders.bubblegum.Matchers.any;
 import static be.janickreynders.bubblegum.Matchers.method;
 
 public class Config {
-    private List<Route> routes = new ArrayList<Route>();
-    private List<ExceptionHandler> exceptionHandlers = new ArrayList<ExceptionHandler>();
+    private Chain filters = new Chain();
+    private Chain handlers = new Chain();
 
 
-    boolean handle(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-        for (Route route : routes) {
-            Match match = route.getMatch(req);
-            if (match.isMatch()) {
-                callHandler(route, match, req, resp);
-
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void callHandler(Route route, Match match, HttpServletRequest req, HttpServletResponse resp) throws Exception {
-        Request request = new Request(req, match.getParams());
-        Response response = new Response(resp);
-        try {
-            route.getHandler().handle(request, response);
-        } catch (Exception e) {
-            for (ExceptionHandler exceptionHandler : exceptionHandlers) {
-                if (exceptionHandler.matches(e)) {
-                    exceptionHandler.handle(request, response);
-                    return;
-                }
-            }
-            throw e;
-        }
+    public Chain buildChain() {
+        return filters.append(handlers);
     }
 
     public void get(String route, Handler handler) {
@@ -101,10 +73,10 @@ public class Config {
     }
 
     public void route(String route, RequestMatcher matcher, Handler handler) {
-        routes.add(new Route(route, handler, matcher));
+        handlers = handlers.append(new Chain(new Route(route, matcher), handler(handler)));
     }
 
-    public void exception(ExceptionMatcher matcher, Handler handler) {
-        exceptionHandlers.add(new ExceptionHandler(matcher, handler));
+    public void apply(String route, Filter filter) {
+        filters = filters.append(new Chain(new Route(route, any()), filter));
     }
 }

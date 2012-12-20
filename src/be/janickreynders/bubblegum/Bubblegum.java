@@ -28,23 +28,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class Bubblegum implements Filter {
+public class Bubblegum implements javax.servlet.Filter {
     private Config app = new Config();
+    private Chain chain;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         getRoutes(filterConfig).init(app);
+        chain = app.buildChain();
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        if (!handle(servletRequest, servletResponse))
-            filterChain.doFilter(servletRequest, servletResponse);
-    }
-
-    private boolean handle(ServletRequest servletRequest, ServletResponse servletResponse) throws ServletException, IOException {
+    public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain filterChain) throws IOException, ServletException {
         try {
-            return app.handle((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse);
+            handle(servletRequest, servletResponse, filterChain);
         } catch (IOException e) {
             throw e;
         } catch (ServletException e) {
@@ -55,6 +52,16 @@ public class Bubblegum implements Filter {
             throw new ServletException(e);
         }
     }
+
+    private void handle(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain filterChain) throws Exception {
+        chain.append(new Chain(null, new Filter() {
+            @Override
+            public void handle(Request req, Response resp, Chain chain) throws Exception {
+                filterChain.doFilter(servletRequest, servletResponse);
+            }
+        })).handle(new Request((HttpServletRequest) servletRequest), new Response((HttpServletResponse) servletResponse));
+    }
+
 
     protected App getRoutes(FilterConfig filterConfig) throws ServletException {
         try {

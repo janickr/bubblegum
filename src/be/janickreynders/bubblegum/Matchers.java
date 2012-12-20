@@ -76,14 +76,4 @@ public class Matchers {
             }
         };
     }
-
-    public static ExceptionMatcher ofType(final Class<? extends Exception> clazz) {
-        return new ExceptionMatcher() {
-            @Override
-            public boolean matches(Exception e) {
-                return clazz.isInstance(e);
-            }
-        };
-    }
-
 }

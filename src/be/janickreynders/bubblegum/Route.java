@@ -33,15 +33,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Route {
-    private final Handler handler;
     private final List<String> paramNames;
     private final Pattern pattern;
     private final RequestMatcher matcher;
 
 
-    public Route(String route, Handler handler, RequestMatcher matcher) {
+    public Route(String route, RequestMatcher matcher) {
         this.matcher = matcher;
-        this.handler = handler;
         this.paramNames = getParamNames(route);
         this.pattern = createPattern(route);
     }
@@ -55,7 +53,7 @@ public class Route {
     }
 
     private static Pattern createPattern(String route) {
-        return Pattern.compile(route.replaceAll(":\\w+", "([^/]+)") + "/?");
+        return Pattern.compile(route.replaceAll("(?<!\\*)\\*(?!\\*)", "[^/]+").replaceAll("\\*\\*", ".*").replaceAll(":\\w+", "([^/]+)") + "/?");
     }
 
     public Match getMatch(HttpServletRequest req) {
@@ -72,9 +70,4 @@ public class Route {
     private String getPath(HttpServletRequest req) {
         return req.getRequestURI().substring(req.getContextPath().length());
     }
-
-    public Handler getHandler() {
-        return handler;
-    }
-
 }

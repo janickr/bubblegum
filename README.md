@@ -1,7 +1,7 @@
 Bubblegum - a micro web framework for java
 ==========================================
 
-Very small web framework: less than 20KB, does not depend on jars other than the servlet api.
+Very small web framework: less than 30KB, does not depend on jars other than the servlet api.
 It's only purpose is to match routes to handlers.
 
 Usage

@@ -23,49 +23,43 @@
 
 package be.janickreynders.bubblegum;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.Collections;
 
-public class Request {
-    private final HttpServletRequest req;
-    private final Map<String, String> params;
+public class Chain {
+    private Route route;
+    private Filter filter;
+    private Chain next;
 
-    public Request(HttpServletRequest req, Map<String, String> params) {
-        this.req = req;
-        this.params = params;
+    public Chain() {
     }
 
-    public Request(HttpServletRequest req) {
-        this(req, new HashMap<String, String>());
+    public Chain(Route route, Filter filter) {
+        this(route, filter, null);
     }
 
-    public HttpServletRequest raw() {
-        return req;
+    public Chain(Route route, Filter filter, Chain next) {
+        this.route = route;
+        this.filter = filter;
+        this.next = next;
     }
 
-    public String param(String name) {
-        return params.get(name);
+    public void handle(Request request, Response response) throws Exception {
+        Match match = getMatch(request);
+        if (filter != null && match.isMatch()) {
+            filter.handle(new Request(request.raw(), match.getParams()), response, next);
+        }
+        else if (next != null) next.handle(request, response);
     }
 
-    public void attribute(String name, Object val) {
-        req.setAttribute(name, val);
+    private Match getMatch(Request request) {
+        if (route == null) return Match.match(Collections.<String, String>emptyMap());
+        return route.getMatch(request.raw());
     }
 
-    public void forward(String url, Response response) throws IOException, ServletException {
-        req.setAttribute("bubblegumParams", params);
-        req.getRequestDispatcher(url).forward(req, response.raw());
-    }
 
-    public Set<String> queryParams() {
-        return new HashSet<String>(req.getParameterMap().keySet());
-    }
-
-    public String queryParam(String name) {
-        return req.getParameter(name);
+    public Chain append(Chain chain) {
+        return (next != null)
+                ? new Chain(this.route, this.filter, next.append(chain))
+                : new Chain(this.route, this.filter, chain);
     }
 }

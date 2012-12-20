@@ -23,21 +23,32 @@
 
 package be.janickreynders.bubblegum;
 
-class ExceptionHandler {
-    private final ExceptionMatcher matcher;
-    private final Handler handler;
+public class Filters {
 
-    ExceptionHandler(ExceptionMatcher matcher, Handler handler) {
-        this.matcher = matcher;
-        this.handler = handler;
+    public static Filter handler(final Handler handler) {
+        return new Filter() {
+            @Override
+            public void handle(Request req, Response resp, Chain chain) throws Exception {
+                handler.handle(req, resp);
+            }
+        };
     }
 
-    public boolean matches(Exception e) {
-        return matcher.matches(e);
+    public static Filter returnStatus(final Class<? extends Exception> clazz, final Handler handler) {
+        return new Filter() {
+            @Override
+            public void handle(Request req, Response resp, Chain chain) throws Exception {
+                try{
+                    chain.handle(req, resp);
+                } catch (Exception e) {
+                    if (clazz.isInstance(e))
+                        handler.handle(req, resp);
+                    else
+                        throw e;
+                }
+            }
+        };
     }
 
 
-    public void handle(Request request, Response response) throws Exception {
-        handler.handle(request, response);
-    }
 }
