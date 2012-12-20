@@ -68,4 +68,16 @@ public class Request {
     public String queryParam(String name) {
         return req.getParameter(name);
     }
+
+    String getPath() {
+        return raw().getRequestURI().substring(raw().getContextPath().length());
+    }
+
+    public String method() {
+        return req.getMethod();
+    }
+
+    public String header(String headerName) {
+        return req.getHeader(headerName);
+    }
 }

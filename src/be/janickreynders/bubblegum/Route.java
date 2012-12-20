@@ -24,7 +24,6 @@
 package be.janickreynders.bubblegum;
 
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,8 +55,8 @@ public class Route {
         return Pattern.compile(route.replaceAll("(?<!\\*)\\*(?!\\*)", "[^/]+").replaceAll("\\*\\*", ".*").replaceAll(":\\w+", "([^/]+)") + "/?");
     }
 
-    public Match getMatch(HttpServletRequest req) {
-        Matcher regex = pattern.matcher(getPath(req));
+    public Match getMatch(Request req) {
+        Matcher regex = pattern.matcher(req.getPath());
         if (! (regex.matches() && matcher.matches(req))) return Match.noMatch();
 
         Map<String, String> params = new HashMap<String, String>();
@@ -67,7 +66,4 @@ public class Route {
         return Match.match(params);
     }
 
-    private String getPath(HttpServletRequest req) {
-        return req.getRequestURI().substring(req.getContextPath().length());
-    }
 }

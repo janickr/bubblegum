@@ -23,15 +23,13 @@
 
 package be.janickreynders.bubblegum;
 
-import javax.servlet.http.HttpServletRequest;
-
 public abstract class RequestMatcher {
-    public abstract boolean matches(HttpServletRequest req);
+    public abstract boolean matches(Request req);
 
     public RequestMatcher and(final RequestMatcher matcher) {
         return new RequestMatcher() {
             @Override
-            public boolean matches(HttpServletRequest req) {
+            public boolean matches(Request req) {
                 return RequestMatcher.this.matches(req) && matcher.matches(req);
             }
         };
@@ -40,7 +38,7 @@ public abstract class RequestMatcher {
     public RequestMatcher or(final RequestMatcher matcher) {
         return new RequestMatcher() {
             @Override
-            public boolean matches(HttpServletRequest req) {
+            public boolean matches(Request req) {
                 return RequestMatcher.this.matches(req) || matcher.matches(req);
             }
         };

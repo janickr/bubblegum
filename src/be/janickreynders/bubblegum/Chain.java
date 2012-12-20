@@ -53,7 +53,7 @@ public class Chain {
 
     private Match getMatch(Request request) {
         if (route == null) return Match.match(Collections.<String, String>emptyMap());
-        return route.getMatch(request.raw());
+        return route.getMatch(request);
     }
 
 
