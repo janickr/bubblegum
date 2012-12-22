@@ -29,13 +29,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class Bubblegum implements javax.servlet.Filter {
-    private Config app = new Config();
     private Chain chain;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        getRoutes(filterConfig).init(app);
-        chain = app.buildChain();
+        chain = getRoutes(filterConfig).createConfig().buildChain();
     }
 
     @Override

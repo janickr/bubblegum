@@ -24,5 +24,5 @@
 package be.janickreynders.bubblegum;
 
 public interface App {
-    void init(Config app);
+    Config createConfig();
 }

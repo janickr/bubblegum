@@ -79,4 +79,8 @@ public class Config {
     public void apply(String route, Filter filter) {
         filters = filters.append(new Chain(new Route(route, any()), filter));
     }
+
+    public void apply(Filter filter) {
+        filters = filters.append(new Chain(null, filter));
+    }
 }

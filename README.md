@@ -16,7 +16,8 @@ import be.janickreynders.bubblegum.*;
 
 public class TestApp implements App {
     @Override
-    public void init(Config on) {
+    public Config createConfig() {
+        Config on = new Config();
 
         on.get("/hello/:name", new Handler() {
             @Override
@@ -26,6 +27,7 @@ public class TestApp implements App {
             }
         });
 
+        return on;
     }
 }
 ```
