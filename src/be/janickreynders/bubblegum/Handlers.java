@@ -24,11 +24,11 @@
 package be.janickreynders.bubblegum;
 
 public class Handlers {
-    public static Handler error(final int httpError) {
+    public static Handler status(final int httpStatusCode) {
         return new Handler() {
             @Override
             public void handle(Request req, Response resp) throws Exception {
-                resp.error(httpError);
+                resp.status(httpStatusCode);
             }
         };
     }

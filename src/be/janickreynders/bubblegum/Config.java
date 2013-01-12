@@ -76,8 +76,12 @@ public class Config {
         handlers = handlers.append(new Chain(new Route(route, matcher), handler(handler)));
     }
 
+    public void apply(String route, RequestMatcher any, Filter filter) {
+        filters = filters.append(new Chain(new Route(route, any), filter));
+    }
+
     public void apply(String route, Filter filter) {
-        filters = filters.append(new Chain(new Route(route, any()), filter));
+        apply(route, any(), filter);
     }
 
     public void apply(Filter filter) {

@@ -41,7 +41,7 @@ public class Response {
         resp.getWriter().append(c);
     }
 
-    public void error(int code) throws IOException {
+    public void status(int code) throws IOException {
         resp.sendError(code);
     }
 

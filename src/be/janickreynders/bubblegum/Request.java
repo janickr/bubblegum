@@ -52,6 +52,10 @@ public class Request {
         return params.get(name);
     }
 
+    public Object attribute(String name) {
+        return req.getAttribute(name);
+    }
+
     public void attribute(String name, Object val) {
         req.setAttribute(name, val);
     }
