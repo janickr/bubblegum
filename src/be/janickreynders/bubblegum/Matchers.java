@@ -74,4 +74,13 @@ public class Matchers {
             }
         };
     }
+
+    public static RequestMatcher not(final RequestMatcher matcher) {
+        return new RequestMatcher() {
+            @Override
+            public boolean matches(Request req) {
+                return !matcher.matches(req);
+            }
+        };
+    }
 }

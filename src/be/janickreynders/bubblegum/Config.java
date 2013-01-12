@@ -24,6 +24,7 @@
 package be.janickreynders.bubblegum;
 
 import static be.janickreynders.bubblegum.Filters.handler;
+import static be.janickreynders.bubblegum.Matchers.all;
 import static be.janickreynders.bubblegum.Matchers.any;
 import static be.janickreynders.bubblegum.Matchers.method;
 
@@ -37,19 +38,19 @@ public class Config {
     }
 
     public void get(String route, Handler handler) {
-        get(route, any(), handler);
+        get(route, all(), handler);
     }
 
     public void put(String route, Handler handler) {
-        put(route, any(), handler);
+        put(route, all(), handler);
     }
 
     public void delete(String route, Handler handler) {
-        delete(route, any(), handler);
+        delete(route, all(), handler);
     }
 
     public void post(String route, Handler handler) {
-        post(route, any(), handler);
+        post(route, all(), handler);
     }
 
     public void get(String route, RequestMatcher matcher, Handler handler) {
@@ -76,12 +77,12 @@ public class Config {
         handlers = handlers.append(new Chain(new Route(route, matcher), handler(handler)));
     }
 
-    public void apply(String route, RequestMatcher any, Filter filter) {
-        filters = filters.append(new Chain(new Route(route, any), filter));
+    public void apply(String route, RequestMatcher matcher, Filter filter) {
+        filters = filters.append(new Chain(new Route(route, matcher), filter));
     }
 
     public void apply(String route, Filter filter) {
-        apply(route, any(), filter);
+        apply(route, all(), filter);
     }
 
     public void apply(Filter filter) {
