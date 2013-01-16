@@ -25,7 +25,6 @@ package be.janickreynders.bubblegum;
 
 import static be.janickreynders.bubblegum.Filters.handler;
 import static be.janickreynders.bubblegum.Matchers.all;
-import static be.janickreynders.bubblegum.Matchers.any;
 import static be.janickreynders.bubblegum.Matchers.method;
 
 public class Config {

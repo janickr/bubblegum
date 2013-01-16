@@ -49,6 +49,14 @@ public class Response {
         resp.setContentType(contentType);
     }
 
+    public void vary(String requestHeaders) {
+        header("Vary", requestHeaders);
+    }
+
+    public void header(String name, String value) {
+        resp.setHeader(name, value);
+    }
+
     public void redirect(String url) throws IOException {
         resp.sendRedirect(url);
     }

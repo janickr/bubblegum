@@ -73,7 +73,7 @@ public class Request {
         return req.getParameter(name);
     }
 
-    String getPath() {
+    public String getPath() {
         return raw().getRequestURI().substring(raw().getContextPath().length());
     }
 

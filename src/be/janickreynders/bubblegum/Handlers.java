@@ -23,6 +23,8 @@
 
 package be.janickreynders.bubblegum;
 
+import static be.janickreynders.bubblegum.Filters.handler;
+
 public class Handlers {
     public static Handler status(final int httpStatusCode) {
         return new Handler() {
@@ -38,6 +40,30 @@ public class Handlers {
             @Override
             public void handle(Request req, Response resp) throws Exception {
                 req.forward(url, resp);
+            }
+        };
+    }
+
+    public static Handler redirect(final String url) {
+        return new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                resp.redirect(url);
+            }
+        };
+    }
+
+    public static Handler response(Handler handler, Filter... filters) {
+        final Chain chain = new Chain();
+        for (Filter filter : filters) {
+            chain.append(new Chain(null, filter));
+        }
+        chain.append(new Chain(null, handler(handler)));
+
+        return new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                chain.handle(req, resp);
             }
         };
     }
