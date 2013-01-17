@@ -73,6 +73,14 @@ More Examples
 -------------
 
 ```java
+import be.janickreynders.bubblegum.*;
+
+import javax.servlet.http.HttpServletResponse;
+
+import static be.janickreynders.bubblegum.Filters.*;
+import static be.janickreynders.bubblegum.Handlers.*;
+import static be.janickreynders.bubblegum.Matchers.*;
+
 public class Examples implements be.janickreynders.bubblegum.App {
     @Override
     public Config createConfig() {
