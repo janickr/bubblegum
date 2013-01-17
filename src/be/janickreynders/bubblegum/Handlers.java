@@ -52,19 +52,4 @@ public class Handlers {
             }
         };
     }
-
-    public static Handler response(Handler handler, Filter... filters) {
-        final Chain chain = new Chain();
-        for (Filter filter : filters) {
-            chain.append(new Chain(null, filter));
-        }
-        chain.append(new Chain(null, handler(handler)));
-
-        return new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                chain.handle(req, resp);
-            }
-        };
-    }
 }
