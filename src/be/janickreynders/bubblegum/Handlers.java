@@ -23,8 +23,6 @@
 
 package be.janickreynders.bubblegum;
 
-import static be.janickreynders.bubblegum.Filters.handler;
-
 public class Handlers {
     public static Handler status(final int httpStatusCode) {
         return new Handler() {
