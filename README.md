@@ -4,13 +4,20 @@ Bubblegum - a micro web framework for java
 Very small web framework: only 25KB, does not depend on jars other than the servlet api.
 It's only purpose is to match routes to handlers.
 
+Bubblegum is inspired by [Spark], but there are important differences. Bubblegum:
+- matches paths case-sensitive
+- can match requests on any of its properties for example on the Accept or Content-type heders
+- Handlers can throw exceptions
+- Filters are more servlet Filter-like (but with more expressive filter mapping)
+
+
 Usage
 -----
 
 1) Implement the App interface
 
 ```java
-package be.janickreynders.test;
+package com.yourpackage.test;
 
 import be.janickreynders.bubblegum.*;
 
@@ -22,8 +29,7 @@ public class TestApp implements App {
         on.get("/hello/:name", new Handler() {
             @Override
             public void handle(Request req, Response resp) throws Exception {
-                resp.ok("<html><body>Hello " + req.param("name")+ "</html></body>");
-                // or req.forward("hello.jsp", resp);
+                resp.ok("Hello " + req.param("name") + "!");
             }
         });
 
@@ -45,7 +51,7 @@ public class TestApp implements App {
         <filter-class>be.janickreynders.bubblegum.Bubblegum</filter-class>
         <init-param>
             <param-name>app</param-name>
-            <param-value>be.janickreynders.test.TestApp</param-value>
+            <param-value>com.yourpackage.test.TestApp</param-value>
         </init-param>
     </filter>
 
@@ -62,5 +68,112 @@ Copyright and License
 ---------------------
 Copyright &copy; 2012-, Janick Reynders. Licensed under [MIT License].
 
-[MIT License]: https://github.com/janickr/bubblegum/raw/master/LICENSE.txt
 
+More Examples
+-------------
+
+```java
+public class Examples implements be.janickreynders.bubblegum.App {
+    @Override
+    public Config createConfig() {
+        Config on = new Config();
+
+        // forward a request to a jsp
+        on.get("/forward/me", forward("forwarded.jsp"));
+
+        // match the paths '/different/this' and '/different/some-other-thing'  but not '/different/that/or/this'
+        on.get("/different/*", forward("forwarded.html"));
+
+        // match any of '/multiple/this/levels', '/multiple/this/or/that/levels' ,...
+        on.get("/multiple/**/levels", forward("forwarded.txt"));
+
+        // redirect to a different url
+        on.get("/redirect/me", redirect("/redirected"));
+
+        // using a path variable
+        on.get("/collection/:id", new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                resp.ok("you requested: " + req.param("id"));
+            }
+        });
+
+        // set the content type of the respons
+        on.get("/textcontent", new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                resp.type("text/plain");
+                resp.ok("You are getting a text response");
+            }
+        });
+
+        // post to a url
+        on.post("/collection", new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                String value = req.queryParam("inputFieldName");
+
+                resp.ok("you posted: " + value);
+            }
+        });
+
+        // another http method
+        on.delete("/collection/:id", new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                resp.ok("you deleted: " + req.param("id"));
+            }
+        });
+
+
+        // different response for different request Accept headers
+        on.get("/variant", accept("text/html"), new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                resp.vary("Accept");
+                resp.ok("<html><body> This is the html variant </body></html>");
+            }
+        });
+
+        on.get("/variant", accept("application/json"), new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                resp.vary("Accept");
+                resp.ok("{ \"message\": \"This is the html variant\" }");
+            }
+        });
+
+        // interpreting different request body content types
+        on.get("/requestbody", contentType("application/x-www-form-urlencoded"), new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                // get params with req.queryParam();
+            }
+        });
+
+        on.get("/requestbody", contentType("application/json"), new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                // parse the json in req.body()
+            }
+        });
+
+        // match multiple http methods, and return a status code
+        on.route("/multiple-methods", any(method("post"), method("put"), method("delete")), status(HttpServletResponse.SC_FORBIDDEN));
+
+
+        /********************** filter examples **********************/
+
+        // cache /js/thirdparty forever
+        on.apply("/js/thirdparty", cacheNeverExpires());
+
+        // forward to an error jsp on a certain exception
+        on.apply(catchAndHandle(IllegalStateException.class, forward("oops.jsp")));
+
+        return on;
+    }
+}
+```
+
+[MIT License]: https://github.com/janickr/bubblegum/raw/master/LICENSE.txt
+[Spark]: https://github.com/perwendel/spark
