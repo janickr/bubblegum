@@ -81,7 +81,8 @@ public class Examples implements be.janickreynders.bubblegum.App {
         // forward a request to a jsp
         on.get("/forward/me", forward("forwarded.jsp"));
 
-        // match the paths '/different/this' and '/different/some-other-thing'  but not '/different/that/or/this'
+        // match the paths '/different/this' and '/different/some-other-thing'
+        //   but not '/different/that/or/this'
         on.get("/different/*", forward("forwarded.html"));
 
         // match any of '/multiple/this/levels', '/multiple/this/or/that/levels' ,...
@@ -159,7 +160,8 @@ public class Examples implements be.janickreynders.bubblegum.App {
         });
 
         // match multiple http methods, and return a status code
-        on.route("/multiple-methods", any(method("post"), method("put"), method("delete")), status(HttpServletResponse.SC_FORBIDDEN));
+        on.route("/multiple-methods", any(method("post"), method("put"), method("delete")),
+            status(HttpServletResponse.SC_FORBIDDEN));
 
 
         /********************** filter examples **********************/
