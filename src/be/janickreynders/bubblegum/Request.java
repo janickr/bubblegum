@@ -25,7 +25,9 @@ package be.janickreynders.bubblegum;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -46,6 +48,19 @@ public class Request {
 
     public HttpServletRequest raw() {
         return req;
+    }
+
+    public String body() throws IOException {
+        BufferedReader reader = req.getReader();
+        StringWriter writer = new StringWriter();
+        char[] buffer = new char[1024];
+
+        int n = reader.read(buffer);
+        while (n != -1) {
+            writer.write(buffer, 0, n);
+            n = reader.read(buffer);
+        }
+        return writer.toString();
     }
 
     public String param(String name) {
