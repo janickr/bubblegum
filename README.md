@@ -10,6 +10,8 @@ Bubblegum is inspired by [Spark], but there are important differences. Bubblegum
 - Handlers can throw exceptions
 - Filters are more servlet Filter-like (but with more expressive filter mapping)
 
+Get the jar at <http://janickreynders.be/bubblegum>
+
 
 Usage
 -----
