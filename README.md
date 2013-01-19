@@ -150,7 +150,7 @@ public class Examples implements be.janickreynders.bubblegum.App {
             @Override
             public void handle(Request req, Response resp) throws Exception {
                 resp.vary("Accept");
-                resp.ok("{ \"message\": \"This is the html variant\" }");
+                resp.ok("{ \"message\": \"This is the json variant\" }");
             }
         });
 
