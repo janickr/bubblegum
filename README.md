@@ -6,7 +6,7 @@ It's only purpose is to match routes to handlers.
 
 Bubblegum is inspired by [Spark], but there are important differences. Bubblegum:
 - matches paths case-sensitive
-- can match requests on any of its properties for example on the Accept or Content-type heders
+- can match requests on any of its properties for example on the Accept or Content-type headers
 - Handlers can throw exceptions
 - Filters are more servlet Filter-like (but with more expressive filter mapping)
 
@@ -83,7 +83,7 @@ import static be.janickreynders.bubblegum.Filters.*;
 import static be.janickreynders.bubblegum.Handlers.*;
 import static be.janickreynders.bubblegum.Matchers.*;
 
-public class Examples implements be.janickreynders.bubblegum.App {
+public class Examples implements App {
     @Override
     public Config createConfig() {
         Config on = new Config();
@@ -109,7 +109,7 @@ public class Examples implements be.janickreynders.bubblegum.App {
             }
         });
 
-        // set the content type of the respons
+        // set the content type of the response
         on.get("/textcontent", new Handler() {
             @Override
             public void handle(Request req, Response resp) throws Exception {
@@ -176,8 +176,8 @@ public class Examples implements be.janickreynders.bubblegum.App {
 
         /********************** filter examples **********************/
 
-        // cache /js/thirdparty forever
-        on.apply("/js/thirdparty", cacheNeverExpires());
+        // cache /js/thirdparty/** forever
+        on.apply("/js/thirdparty/**", cacheNeverExpires());
 
         // forward to an error jsp on a certain exception
         on.apply(catchAndHandle(IllegalStateException.class, forward("oops.jsp")));
