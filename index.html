@@ -32,14 +32,14 @@
       <section id="main_content" class="inner">
         <h1>Bubblegum - a micro web framework for java</h1>
 
-<p>Very small web framework: only 25KB, does not depend on jars other than the servlet api.
+<p>Only 25KB and does not depend on jars other than the servlet api.
 It's only purpose is to match routes to handlers.</p>
 
 <p>Bubblegum is inspired by <a href="https://github.com/perwendel/spark">Spark</a>, but there are important differences. Bubblegum:</p>
 
 <ul>
 <li>matches paths case-sensitive</li>
-<li>can match requests on any of its properties for example on the Accept or Content-type heders</li>
+<li>can match requests on any of its properties for example on the Accept or Content-type headers</li>
 <li>Handlers can throw exceptions</li>
 <li>Filters are more servlet Filter-like (but with more expressive filter mapping)</li>
 </ul><h2>Usage</h2>
@@ -106,7 +106,7 @@ It's only purpose is to match routes to handlers.</p>
 <span class="kn">import</span> <span class="nn">static</span> <span class="n">be</span><span class="o">.</span><span class="na">janickreynders</span><span class="o">.</span><span class="na">bubblegum</span><span class="o">.</span><span class="na">Handlers</span><span class="o">.*;</span>
 <span class="kn">import</span> <span class="nn">static</span> <span class="n">be</span><span class="o">.</span><span class="na">janickreynders</span><span class="o">.</span><span class="na">bubblegum</span><span class="o">.</span><span class="na">Matchers</span><span class="o">.*;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Examples</span> <span class="kd">implements</span> <span class="n">be</span><span class="o">.</span><span class="na">janickreynders</span><span class="o">.</span><span class="na">bubblegum</span><span class="o">.</span><span class="na">App</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Examples</span> <span class="kd">implements</span> <span class="na">App</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="n">Config</span> <span class="nf">createConfig</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">Config</span> <span class="n">on</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Config</span><span class="o">();</span>
@@ -132,7 +132,7 @@ It's only purpose is to match routes to handlers.</p>
             <span class="o">}</span>
         <span class="o">});</span>
 
-        <span class="c1">// set the content type of the respons</span>
+        <span class="c1">// set the content type of the response</span>
         <span class="n">on</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"/textcontent"</span><span class="o">,</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">()</span> <span class="o">{</span>
             <span class="nd">@Override</span>
             <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="n">Request</span> <span class="n">req</span><span class="o">,</span> <span class="n">Response</span> <span class="n">resp</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
@@ -173,7 +173,7 @@ It's only purpose is to match routes to handlers.</p>
             <span class="nd">@Override</span>
             <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="n">Request</span> <span class="n">req</span><span class="o">,</span> <span class="n">Response</span> <span class="n">resp</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
                 <span class="n">resp</span><span class="o">.</span><span class="na">vary</span><span class="o">(</span><span class="s">"Accept"</span><span class="o">);</span>
-                <span class="n">resp</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="s">"{ \"message\": \"This is the html variant\" }"</span><span class="o">);</span>
+                <span class="n">resp</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="s">"{ \"message\": \"This is the json variant\" }"</span><span class="o">);</span>
             <span class="o">}</span>
         <span class="o">});</span>
 
@@ -199,8 +199,8 @@ It's only purpose is to match routes to handlers.</p>
 
         <span class="cm">/********************** filter examples **********************/</span>
 
-        <span class="c1">// cache /js/thirdparty forever</span>
-        <span class="n">on</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="s">"/js/thirdparty"</span><span class="o">,</span> <span class="n">cacheNeverExpires</span><span class="o">());</span>
+        <span class="c1">// cache /js/thirdparty/** forever</span>
+        <span class="n">on</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="s">"/js/thirdparty/**"</span><span class="o">,</span> <span class="n">cacheNeverExpires</span><span class="o">());</span>
 
         <span class="c1">// forward to an error jsp on a certain exception</span>
         <span class="n">on</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">catchAndHandle</span><span class="o">(</span><span class="n">IllegalStateException</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">forward</span><span class="o">(</span><span class="s">"oops.jsp"</span><span class="o">)));</span>
