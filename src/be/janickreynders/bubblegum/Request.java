@@ -24,6 +24,7 @@
 package be.janickreynders.bubblegum;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -86,6 +87,16 @@ public class Request {
 
     public String queryParam(String name) {
         return req.getParameter(name);
+    }
+
+    public Cookie cookie(String name) {
+        Cookie[] cookies = req.getCookies();
+        if (cookies == null) return null;
+
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(name)) return cookie;
+        }
+        return null;
     }
 
     public String getPath() {

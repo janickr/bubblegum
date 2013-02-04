@@ -23,6 +23,7 @@
 
 package be.janickreynders.bubblegum;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -60,4 +61,19 @@ public class Response {
     public void redirect(String url) throws IOException {
         resp.sendRedirect(url);
     }
+
+    public void removeCookie(String name) {
+        addCookie(name, "", 0);
+    }
+
+    public void addNonPersistentCookie(String name, String value) {
+        addCookie(name, value, -1);
+    }
+
+    public void addCookie(String name, String value, int maxAge) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setMaxAge(maxAge);
+        resp.addCookie(cookie);
+    }
+
 }
