@@ -60,6 +60,10 @@ public class TestApp implements App {
     <filter-mapping>
         <filter-name>Bubblegum</filter-name>
         <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>
     </filter-mapping>
 </web-app>
 ```
@@ -89,14 +93,17 @@ public class Examples implements App {
         Config on = new Config();
 
         // forward a request to a jsp
-        on.get("/forward/me", forward("forwarded.jsp"));
+        on.get("/forward/me", forward("/forwarded.jsp"));
+
+        // forward a request to a jsp in WEB-INF/jsp
+        on.get("/forward/me2", forward("/WEB-INF/jsp/forwarded.jsp"));
 
         // match the paths '/different/this' and '/different/some-other-thing'
         //   but not '/different/that/or/this'
-        on.get("/different/*", forward("forwarded.html"));
+        on.get("/different/*", forward("/forwarded.html"));
 
         // match any of '/multiple/this/levels', '/multiple/this/or/that/levels' ,...
-        on.get("/multiple/**/levels", forward("forwarded.txt"));
+        on.get("/multiple/**/levels", forward("/forwarded.txt"));
 
         // redirect to a different url
         on.get("/redirect/me", redirect("/redirected"));
@@ -180,7 +187,7 @@ public class Examples implements App {
         on.apply("/js/thirdparty/**", cacheNeverExpires());
 
         // forward to an error jsp on a certain exception
-        on.apply(catchAndHandle(IllegalStateException.class, forward("oops.jsp")));
+        on.apply(catchAndHandle(IllegalStateException.class, forward("/oops.jsp")));
 
         return on;
     }

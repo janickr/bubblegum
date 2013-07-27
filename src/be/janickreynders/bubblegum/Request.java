@@ -29,10 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Request {
     private final HttpServletRequest req;
@@ -87,6 +84,10 @@ public class Request {
 
     public String queryParam(String name) {
         return req.getParameter(name);
+    }
+
+    public List<String> queryParams(String name) {
+        return Arrays.asList(req.getParameterValues(name));
     }
 
     public Cookie cookie(String name) {
