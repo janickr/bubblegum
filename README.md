@@ -4,11 +4,12 @@ Bubblegum - a micro web framework for java
 Only 35KB and does not depend on jars other than the servlet api.
 It's only purpose is to match routes to handlers.
 
-Bubblegum is inspired by [Spark], but there are important differences. Bubblegum:
-- matches paths case-sensitive
-- can match requests on any of its properties for example on the Accept or Content-type headers
+Bubblegum is inspired by [Spark], but there are important differences. In Bubblegum:
+- Paths are matched case-sensitive
+- Requests can be matched on any of its properties for example on the Accept or Content-type headers
 - Handlers can throw exceptions
 - Filters are more servlet Filter-like (but with more expressive filter mapping)
+- A JdbcHelper provides request-scoped jdbc transactions (Optional - it's a bubblegum Filter)
 
 Get the jar at <http://janickreynders.be/bubblegum>
 
@@ -212,7 +213,11 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import static be.janickreynders.bubblegum.Matchers.accept;
+import static be.janickreynders.bubblegum.jdbc.JdbcHelper.withDbConnection;
 
 public class JdbcExample implements App {
     @Override
@@ -245,6 +250,21 @@ public class JdbcExample implements App {
             }
         });
 
+        on.post("/doSomethingAsynchronousInOneTransaction", accept("text/html"), new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                executor.execute(withDbConnection(new Runnable() {
+                    @Override
+                    public void run() {
+                        db.update("insert into this_table (some_col) values (?)", "one thing");
+                        db.update("insert into that_table (some_col) values (?)", "another thing");
+                    }
+                }));
+
+                resp.ok("it's running");
+            }
+        });
+
         return on;
     }
 
@@ -256,6 +276,12 @@ public class JdbcExample implements App {
         }
         // you could also just create your datasource here instead of having one configured in JNDI
     }
+
+    public JdbcExample() {
+        executor = Executors.newSingleThreadExecutor();
+    }
+
+    private final ExecutorService executor;
 }
 ```
 
