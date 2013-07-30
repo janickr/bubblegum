@@ -47,10 +47,6 @@ table {
   border-spacing: 0;
 }
 
-a:focus {
-  outline: none;
-}
-
 /*******************************************************************************
 Theme Styles
 *******************************************************************************/
@@ -328,17 +324,7 @@ Full-Width Styles
   bottom: -40px;
   right: 0;
   height: 70px;
-}
-
-#downloads a {
-  background: url('../images/icon_download.png') no-repeat 0% 45%;
-  display: block;
-  float: right;
-  height:70px;
-  overflow: hidden;
-  padding-top: 35px;
-  padding-left: 25px;
-  padding-right: 10px;
+  background: url('../images/icon_download.png') no-repeat 0% 90%;
 }
 
 .zip_download_link {
