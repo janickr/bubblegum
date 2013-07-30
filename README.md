@@ -1,7 +1,7 @@
 Bubblegum - a micro web framework for java
 ==========================================
 
-Only 25KB and does not depend on jars other than the servlet api.
+Only 35KB and does not depend on jars other than the servlet api.
 It's only purpose is to match routes to handlers.
 
 Bubblegum is inspired by [Spark], but there are important differences. Bubblegum:
@@ -98,6 +98,9 @@ public class Examples implements App {
         // forward a request to a jsp in WEB-INF/jsp
         on.get("/forward/me2", forward("/WEB-INF/jsp/forwarded.jsp"));
 
+        // forward a request to another handler
+        on.get("/forward/again", forward("/textcontent"));
+
         // match the paths '/different/this' and '/different/some-other-thing'
         //   but not '/different/that/or/this'
         on.get("/different/*", forward("/forwarded.html"));
@@ -190,6 +193,68 @@ public class Examples implements App {
         on.apply(catchAndHandle(IllegalStateException.class, forward("/oops.jsp")));
 
         return on;
+    }
+}
+```
+
+Jdbc helper
+-----------
+JdbcHelper contains some convenience methods for querying a rdbms. If you configure JdbcHelper as a bubblegum filter
+it will always return the same connection during a request (the connection is bound to the thread).
+After the request the transaction is committed (or rolled back in case the handler threw an exception)
+and the connection will be closed.
+
+```java
+import be.janickreynders.bubblegum.*;
+import be.janickreynders.bubblegum.jdbc.JdbcHelper;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
+import static be.janickreynders.bubblegum.Matchers.accept;
+
+public class JdbcExample implements App {
+    @Override
+    public Config createConfig() {
+        final JdbcHelper db = new JdbcHelper(getDataSource());
+
+        Config on = new Config();
+
+        on.apply(db); // JdbcHelper is a filter that returns the same open connection during your request
+                      // It will commit your transaction after the request and closes the connection
+
+        on.post("/insertSomething", accept("text/html"), new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                String value1 = req.queryParam("inputFieldName1");
+                String value2 = req.queryParam("inputFieldName2");
+                db.update("insert into my_table (value1, value2) values (?, ?)", value1, value2);
+
+                resp.ok("you inserted: " + value1 + " and " + value2);
+            }
+        });
+
+        on.get("/queryValue2/:value1", accept("text/html"), new Handler() {
+            @Override
+            public void handle(Request req, Response resp) throws Exception {
+                String value1 = req.param("value1");
+                String value2 = db.getString("select value2 from my_table where value1 = ?", value1);
+
+                resp.ok(value2);
+            }
+        });
+
+        return on;
+    }
+
+    private DataSource getDataSource() {
+        try {
+            return(DataSource) new InitialContext().lookup("java:/comp/env/jdbc/yourDatasourceNameInJNDI");
+        } catch (NamingException e) {
+            throw new RuntimeException(e);
+        }
+        // you could also just create your datasource here instead of having one configured in JNDI
     }
 }
 ```

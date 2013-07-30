@@ -26,6 +26,6 @@ package be.janickreynders.bubblegum.jdbc;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-interface ResultSetHandler<T> {
+public interface ResultSetHandler<T> {
     public T handle(ResultSet rs) throws SQLException;
 }

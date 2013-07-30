@@ -12,10 +12,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static be.janickreynders.bubblegum.jdbc.ResultSetHandlers.*;
 
 public class JdbcHelper implements Filter {
+    private static Logger LOG = Logger.getLogger(JdbcHelper.class.getName());
 
     private static ThreadLocal<Connection> transactionalConnection = new ThreadLocal<Connection>();
     private DataSource ds;
@@ -30,10 +33,10 @@ public class JdbcHelper implements Filter {
             chain.handle(req, resp);
             commit();
         } catch (Exception e) {
-            rollback();
+            rollbackQuietly();
             throw e;
         } finally {
-            close();
+            closeQuietly();
         }
     }
 
@@ -47,12 +50,20 @@ public class JdbcHelper implements Filter {
         if (connection != null) connection.rollback();
     }
 
-    private static void close() {
+    private static void rollbackQuietly() {
+        try {
+            rollback();
+        } catch (Exception ignore) {
+            LOG.log(Level.WARNING, "Exception during rollback", ignore);
+        }
+    }
+
+    private static void closeQuietly() {
         try {
             Connection connection = transactionalConnection.get();
             if (connection != null && !connection.isClosed()) connection.close();
-        } catch (Exception e) {
-            /* close quietly */
+        } catch (Exception ignore) {
+            LOG.log(Level.WARNING, "Exception while closing connection", ignore);
         } finally {
             transactionalConnection.remove();
         }
@@ -114,7 +125,9 @@ public class JdbcHelper implements Filter {
         } finally {
             try {
                 rs.close();
-            } catch (SQLException e) { /* close quietly */ }
+            } catch (SQLException ignore) {
+                LOG.log(Level.WARNING, "Exception while closing ResultSet", ignore);
+            }
         }
     }
 
@@ -131,7 +144,9 @@ public class JdbcHelper implements Filter {
         } finally {
             try {
                 statement.close();
-            } catch (SQLException e) { /* close quietly */ }
+            } catch (SQLException ignore) {
+                LOG.log(Level.WARNING, "Exception while closing Statement", ignore);
+            }
         }
     }
 
@@ -151,7 +166,7 @@ public class JdbcHelper implements Filter {
             }
             return statement.executeQuery();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new JdbcException(e);
         }
     }
 
@@ -163,16 +178,12 @@ public class JdbcHelper implements Filter {
                     r.run();
                     commit();
                 } catch (RuntimeException e) {
-                    try {
-                        rollback();
-                    } catch (SQLException ignore) {
-                        // rollback quietly
-                    }
+                    rollbackQuietly();
                     throw e;
                 } catch (SQLException e) {
                     throw new JdbcException(e);
                 } finally {
-                    close();
+                    closeQuietly();
                 }
             }
         };
