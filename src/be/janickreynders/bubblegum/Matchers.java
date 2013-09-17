@@ -43,8 +43,14 @@ public class Matchers {
         };
     }
 
-    public static RequestMatcher accept(CharSequence mimeType) {
-        return header("Accept", mimeType);
+    public static RequestMatcher accept(final CharSequence mimeType) {
+        return new RequestMatcher() {
+            @Override
+            public boolean matches(Request req) {
+                String accept = req.header("Accept");
+                return accept.contains(mimeType) || accept.equals("*/*");
+            }
+        };
     }
 
     public static RequestMatcher contentType(CharSequence contentType) {
