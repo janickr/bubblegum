@@ -133,7 +133,7 @@ public class Examples implements App {
         on.post("/collection", new Handler() {
             @Override
             public void handle(Request req, Response resp) throws Exception {
-                String value = req.queryParam("inputFieldName");
+                String value = req.param("inputFieldName");
 
                 resp.ok("you posted: " + value);
             }
@@ -169,7 +169,7 @@ public class Examples implements App {
         on.get("/requestbody", contentType("application/x-www-form-urlencoded"), new Handler() {
             @Override
             public void handle(Request req, Response resp) throws Exception {
-                // get params with req.queryParam();
+                // get params with req.param();
             }
         });
 
@@ -232,8 +232,8 @@ public class JdbcExample implements App {
         on.post("/insertSomething", accept("text/html"), new Handler() {
             @Override
             public void handle(Request req, Response resp) throws Exception {
-                String value1 = req.queryParam("inputFieldName1");
-                String value2 = req.queryParam("inputFieldName2");
+                String value1 = req.param("inputFieldName1");
+                String value2 = req.param("inputFieldName2");
                 db.update("insert into my_table (value1, value2) values (?, ?)", value1, value2);
 
                 resp.ok("you inserted: " + value1 + " and " + value2);

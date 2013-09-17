@@ -33,11 +33,11 @@ import java.util.*;
 
 public class Request {
     private final HttpServletRequest req;
-    private final Map<String, String> params;
+    private final Map<String, String> pathParams;
 
-    public Request(HttpServletRequest req, Map<String, String> params) {
+    public Request(HttpServletRequest req, Map<String, String> pathParams) {
         this.req = req;
-        this.params = params;
+        this.pathParams = pathParams;
     }
 
     public Request(HttpServletRequest req) {
@@ -62,7 +62,12 @@ public class Request {
     }
 
     public String param(String name) {
-        return params.get(name);
+        String val = queryParam(name);
+        return (val == null) ? pathParam(name) : val;
+    }
+
+    private String pathParam(String name) {
+        return pathParams.get(name);
     }
 
     public Object attribute(String name) {
@@ -74,7 +79,7 @@ public class Request {
     }
 
     public void forward(String url, Response response) throws IOException, ServletException {
-        req.setAttribute("bubblegumParams", params);
+        req.setAttribute("bubblegumParams", pathParams);
         req.getRequestDispatcher(url).forward(req, response.raw());
     }
 
