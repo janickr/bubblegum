@@ -22,7 +22,7 @@
           <h2 id="project_tagline">java micro web framework</h2>
 
             <section id="downloads">
-                <a href="binaries/bubblegum-0.8-sources.zip">sources</a> <a href="binaries/bubblegum-0.8.jar">jar</a>
+                <a href="binaries/bubblegum-0.8.1-sources.zip">sources</a> <a href="binaries/bubblegum-0.8.1.jar">jar</a>
             </section>
         </header>
     </div>
@@ -162,7 +162,7 @@ It's only purpose is to match routes to handlers.</p>
         <span class="n">on</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="s">"/collection"</span><span class="o">,</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">()</span> <span class="o">{</span>
             <span class="nd">@Override</span>
             <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="n">Request</span> <span class="n">req</span><span class="o">,</span> <span class="n">Response</span> <span class="n">resp</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-                <span class="n">String</span> <span class="n">value</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">queryParam</span><span class="o">(</span><span class="s">"inputFieldName"</span><span class="o">);</span>
+                <span class="n">String</span> <span class="n">value</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">param</span><span class="o">(</span><span class="s">"inputFieldName"</span><span class="o">);</span>
 
                 <span class="n">resp</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="s">"you posted: "</span> <span class="o">+</span> <span class="n">value</span><span class="o">);</span>
             <span class="o">}</span>
@@ -198,7 +198,7 @@ It's only purpose is to match routes to handlers.</p>
         <span class="n">on</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"/requestbody"</span><span class="o">,</span> <span class="n">contentType</span><span class="o">(</span><span class="s">"application/x-www-form-urlencoded"</span><span class="o">),</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">()</span> <span class="o">{</span>
             <span class="nd">@Override</span>
             <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="n">Request</span> <span class="n">req</span><span class="o">,</span> <span class="n">Response</span> <span class="n">resp</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-                <span class="c1">// get params with req.queryParam();</span>
+                <span class="c1">// get params with req.param();</span>
             <span class="o">}</span>
         <span class="o">});</span>
 
@@ -261,8 +261,8 @@ and the connection will be closed.</p>
         <span class="n">on</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="s">"/insertSomething"</span><span class="o">,</span> <span class="n">accept</span><span class="o">(</span><span class="s">"text/html"</span><span class="o">),</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">()</span> <span class="o">{</span>
             <span class="nd">@Override</span>
             <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="n">Request</span> <span class="n">req</span><span class="o">,</span> <span class="n">Response</span> <span class="n">resp</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-                <span class="n">String</span> <span class="n">value1</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">queryParam</span><span class="o">(</span><span class="s">"inputFieldName1"</span><span class="o">);</span>
-                <span class="n">String</span> <span class="n">value2</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">queryParam</span><span class="o">(</span><span class="s">"inputFieldName2"</span><span class="o">);</span>
+                <span class="n">String</span> <span class="n">value1</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">param</span><span class="o">(</span><span class="s">"inputFieldName1"</span><span class="o">);</span>
+                <span class="n">String</span> <span class="n">value2</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">param</span><span class="o">(</span><span class="s">"inputFieldName2"</span><span class="o">);</span>
                 <span class="n">db</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="s">"insert into my_table (value1, value2) values (?, ?)"</span><span class="o">,</span> <span class="n">value1</span><span class="o">,</span> <span class="n">value2</span><span class="o">);</span>
 
                 <span class="n">resp</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="s">"you inserted: "</span> <span class="o">+</span> <span class="n">value1</span> <span class="o">+</span> <span class="s">" and "</span> <span class="o">+</span> <span class="n">value2</span><span class="o">);</span>
