@@ -66,13 +66,22 @@ public class Response {
         addCookie(name, "", 0);
     }
 
+    public void removeCookie(String name, String path) {
+        addCookie(name, "", 0, path);
+    }
+
     public void addNonPersistentCookie(String name, String value) {
         addCookie(name, value, -1);
     }
 
     public void addCookie(String name, String value, int maxAge) {
+        addCookie(name, value, maxAge, null);
+    }
+
+    public void addCookie(String name, String value, int maxAge, String path) {
         Cookie cookie = new Cookie(name, value);
         cookie.setMaxAge(maxAge);
+        cookie.setPath(path);
         resp.addCookie(cookie);
     }
 
