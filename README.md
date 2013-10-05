@@ -1,15 +1,15 @@
 Bubblegum - a micro web framework for java
 ==========================================
 
-Only 35KB and does not depend on jars other than the servlet api.
+Less than 50KB and does not depend on jars other than the servlet api.
 It's only purpose is to match routes to handlers.
 
 Bubblegum is inspired by [Spark], but there are important differences. In Bubblegum:
-- Paths are matched case-sensitive
+- Paths are matched case-sensitive, path parameters extracted without changing case
 - Requests can be matched on any of its properties for example on the Accept or Content-type headers
 - Handlers can throw exceptions
 - Filters are more servlet Filter-like (but with more expressive filter mapping)
-- A JdbcHelper provides request-scoped jdbc transactions (Optional - it's a bubblegum Filter)
+- JdbcHelper makes queries easy, ConnectionProvider provides request-scoped jdbc transactions (Optional - it's a bubblegum Filter)
 
 Get the jar at <http://janickreynders.be/bubblegum>
 

@@ -63,6 +63,26 @@ public class Filters {
         };
     }
 
+    public static Filter charset(final String charset) {
+        return new Filter() {
+            @Override
+            public void handle(Request req, Response resp, Chain chain) throws Exception {
+                resp.raw().setCharacterEncoding(charset);
+                chain.handle(req, resp);
+            }
+        };
+    }
+
+    public static Filter contentType(final String contentType) {
+        return new Filter() {
+            @Override
+            public void handle(Request req, Response resp, Chain chain) throws Exception {
+                resp.contentType(contentType);
+                chain.handle(req, resp);
+            }
+        };
+    }
+
     public static Filter cacheNeverExpires() {
         return new Filter() {
             @Override

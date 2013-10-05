@@ -46,7 +46,7 @@ public class Response {
         resp.sendError(code);
     }
 
-    public void type(String contentType) {
+    public void contentType(String contentType) {
         resp.setContentType(contentType);
     }
 
