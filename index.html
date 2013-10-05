@@ -22,7 +22,7 @@
           <h2 id="project_tagline">java micro web framework</h2>
 
             <section id="downloads">
-                <a href="binaries/bubblegum-0.8.2-sources.zip">sources</a> <a href="binaries/bubblegum-0.8.2.jar">jar</a>
+                <a href="binaries/bubblegum-0.8.3-sources.zip">sources</a> <a href="binaries/bubblegum-0.8.3.jar">jar</a>
             </section>
         </header>
     </div>
@@ -33,17 +33,17 @@
         <h1>
 <a name="bubblegum---a-micro-web-framework-for-java" class="anchor" href="#bubblegum---a-micro-web-framework-for-java"><span class="octicon octicon-link"></span></a>Bubblegum - a micro web framework for java</h1>
 
-<p>Only 35KB and does not depend on jars other than the servlet api.
+<p>Less than 50KB and does not depend on jars other than the servlet api.
 It's only purpose is to match routes to handlers.</p>
 
 <p>Bubblegum is inspired by <a href="https://github.com/perwendel/spark">Spark</a>, but there are important differences. In Bubblegum:</p>
 
 <ul>
-<li>Paths are matched case-sensitive</li>
+<li>Paths are matched case-sensitive, path parameters extracted without changing case</li>
 <li>Requests can be matched on any of its properties for example on the Accept or Content-type headers</li>
 <li>Handlers can throw exceptions</li>
 <li>Filters are more servlet Filter-like (but with more expressive filter mapping)</li>
-<li>A JdbcHelper provides request-scoped jdbc transactions (Optional - it's a bubblegum Filter)</li>
+<li>JdbcHelper makes queries easy, ConnectionProvider provides request-scoped jdbc transactions (Optional - it's a bubblegum Filter)</li>
 </ul><p>Get the jar at <a href="http://janickreynders.be/bubblegum">http://janickreynders.be/bubblegum</a></p>
 
 <h2>
@@ -230,13 +230,13 @@ It's only purpose is to match routes to handlers.</p>
 <h2>
 <a name="jdbc-helper" class="anchor" href="#jdbc-helper"><span class="octicon octicon-link"></span></a>Jdbc helper</h2>
 
-<p>JdbcHelper contains some convenience methods for querying a rdbms. If you configure JdbcHelper as a bubblegum filter
+<p>JdbcHelper contains some convenience methods for querying a rdbms. If you configure ConnectionProvider as a bubblegum filter
 it will always return the same connection during a request (the connection is bound to the thread).
 After the request the transaction is committed (or rolled back in case the handler threw an exception)
 and the connection will be closed.</p>
 
 <div class="highlight"><pre><span class="kn">import</span> <span class="nn">be.janickreynders.bubblegum.*</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">be.janickreynders.bubblegum.jdbc.JdbcHelper</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">be.janickreynders.bubblegum.jdbc.*</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">javax.naming.InitialContext</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">javax.naming.NamingException</span><span class="o">;</span>
@@ -246,7 +246,7 @@ and the connection will be closed.</p>
 <span class="kn">import</span> <span class="nn">java.util.concurrent.Executors</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">static</span> <span class="n">be</span><span class="o">.</span><span class="na">janickreynders</span><span class="o">.</span><span class="na">bubblegum</span><span class="o">.</span><span class="na">Matchers</span><span class="o">.</span><span class="na">accept</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">static</span> <span class="n">be</span><span class="o">.</span><span class="na">janickreynders</span><span class="o">.</span><span class="na">bubblegum</span><span class="o">.</span><span class="na">jdbc</span><span class="o">.</span><span class="na">JdbcHelper</span><span class="o">.</span><span class="na">withDbConnection</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">static</span> <span class="n">be</span><span class="o">.</span><span class="na">janickreynders</span><span class="o">.</span><span class="na">bubblegum</span><span class="o">.</span><span class="na">jdbc</span><span class="o">.</span><span class="na">ConnectionProvider</span><span class="o">.</span><span class="na">withDbConnection</span><span class="o">;</span>
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">JdbcExample</span> <span class="kd">implements</span> <span class="n">App</span> <span class="o">{</span>
     <span class="nd">@Override</span>
@@ -255,7 +255,7 @@ and the connection will be closed.</p>
 
         <span class="n">Config</span> <span class="n">on</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Config</span><span class="o">();</span>
 
-        <span class="n">on</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">db</span><span class="o">);</span> <span class="c1">// JdbcHelper is a filter that returns the same open connection during your request</span>
+        <span class="n">on</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">new ConnectionProvider()</span><span class="o">);</span> <span class="c1">// ConnectionProvider is a filter that returns the same open connection during your request</span>
                       <span class="c1">// It will commit your transaction after the request and closes the connection</span>
 
         <span class="n">on</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="s">"/insertSomething"</span><span class="o">,</span> <span class="n">accept</span><span class="o">(</span><span class="s">"text/html"</span><span class="o">),</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">()</span> <span class="o">{</span>
