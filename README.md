@@ -200,14 +200,14 @@ public class Examples implements App {
 
 Jdbc helper
 -----------
-JdbcHelper contains some convenience methods for querying a rdbms. If you configure JdbcHelper as a bubblegum filter
+JdbcHelper contains some convenience methods for querying a rdbms. If you configure ConnectionProvider as a bubblegum filter
 it will always return the same connection during a request (the connection is bound to the thread).
 After the request the transaction is committed (or rolled back in case the handler threw an exception)
 and the connection will be closed.
 
 ```java
 import be.janickreynders.bubblegum.*;
-import be.janickreynders.bubblegum.jdbc.JdbcHelper;
+import be.janickreynders.bubblegum.jdbc.*;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -217,7 +217,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static be.janickreynders.bubblegum.Matchers.accept;
-import static be.janickreynders.bubblegum.jdbc.JdbcHelper.withDbConnection;
+import static be.janickreynders.bubblegum.jdbc.ConnectionProvider.withDbConnection;
 
 public class JdbcExample implements App {
     @Override
@@ -226,7 +226,7 @@ public class JdbcExample implements App {
 
         Config on = new Config();
 
-        on.apply(db); // JdbcHelper is a filter that returns the same open connection during your request
+        on.apply(new ConnectionProvider()); // ConnectionProvider is a filter that returns the same open connection during your request
                       // It will commit your transaction after the request and closes the connection
 
         on.post("/insertSomething", accept("text/html"), new Handler() {
