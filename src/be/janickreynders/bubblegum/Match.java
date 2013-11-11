@@ -27,18 +27,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Match {
+    private static Match NO_MATCH = new Match(false);
+    private static Match MATCH = new Match(true);
+
     private boolean match;
     private Map<String, String> params = new HashMap<String, String>();
 
+    private Match(boolean b) {
+        match = b;
+    }
+
     public static Match match(Map<String, String> params) {
-        Match match = new Match();
-        match.match = true;
+        Match match = new Match(true);
         match.params = params;
         return match;
     }
 
     public static Match noMatch() {
-        return new Match();
+        return NO_MATCH;
+    }
+
+    public static Match match() {
+        return MATCH;
+    }
+
+    public static Match when(boolean b) {
+        return b ? MATCH : NO_MATCH;
     }
 
     public boolean isMatch() {
@@ -47,5 +61,17 @@ public class Match {
 
     public Map<String, String> getParams() {
         return params;
+    }
+
+    public Match and(Match other) {
+        return new Match(match && other.match);
+    }
+
+    public Match or(Match other) {
+        return new Match(match || other.match);
+    }
+
+    public Match negate() {
+        return new Match(!match);
     }
 }

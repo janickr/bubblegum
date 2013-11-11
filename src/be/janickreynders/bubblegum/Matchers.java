@@ -28,8 +28,8 @@ public class Matchers {
     public static RequestMatcher method(final String httpMethod) {
         return new RequestMatcher() {
             @Override
-            public boolean matches(Request req) {
-                return httpMethod.equalsIgnoreCase(req.method());
+            public Match matches(Request req) {
+                return Match.when(httpMethod.equalsIgnoreCase(req.method()));
             }
         };
     }
@@ -37,8 +37,8 @@ public class Matchers {
     public static RequestMatcher header(final String headerName, final CharSequence value) {
         return new RequestMatcher() {
             @Override
-            public boolean matches(Request req) {
-                return req.header(headerName).contains(value);
+            public Match matches(Request req) {
+                return Match.when(req.header(headerName).contains(value));
             }
         };
     }
@@ -46,9 +46,9 @@ public class Matchers {
     public static RequestMatcher accept(final CharSequence mimeType) {
         return new RequestMatcher() {
             @Override
-            public boolean matches(Request req) {
+            public Match matches(Request req) {
                 String accept = req.header("Accept");
-                return accept.contains(mimeType) || accept.equals("*/*");
+                return Match.when(accept.contains(mimeType) || accept.equals("*/*"));
             }
         };
     }
@@ -57,14 +57,19 @@ public class Matchers {
         return header("Content-Type", contentType);
     }
 
+    public static RequestMatcher matchRoute(String route) {
+        return new Route(route);
+    }
+
     public static RequestMatcher all(final RequestMatcher... matchers) {
         return new RequestMatcher() {
             @Override
-            public boolean matches(Request req) {
+            public Match matches(Request req) {
+                Match result = Match.match();
                 for (RequestMatcher matcher : matchers) {
-                    if (!matcher.matches(req)) return false;
+                    result.and(matcher.matches(req));
                 }
-                return true;
+                return result;
             }
         };
     }
@@ -72,11 +77,12 @@ public class Matchers {
     public static RequestMatcher any(final RequestMatcher... matchers) {
         return new RequestMatcher() {
             @Override
-            public boolean matches(Request req) {
+            public Match matches(Request req) {
+                Match result = Match.noMatch();
                 for (RequestMatcher matcher : matchers) {
-                    if (matcher.matches(req)) return true;
+                    result.or(matcher.matches(req));
                 }
-                return false;
+                return result;
             }
         };
     }
@@ -84,8 +90,8 @@ public class Matchers {
     public static RequestMatcher not(final RequestMatcher matcher) {
         return new RequestMatcher() {
             @Override
-            public boolean matches(Request req) {
-                return !matcher.matches(req);
+            public Match matches(Request req) {
+                return matcher.matches(req).negate();
             }
         };
     }

@@ -24,13 +24,13 @@
 package be.janickreynders.bubblegum;
 
 public abstract class RequestMatcher {
-    public abstract boolean matches(Request req);
+    public abstract Match matches(Request req);
 
     public RequestMatcher and(final RequestMatcher matcher) {
         return new RequestMatcher() {
             @Override
-            public boolean matches(Request req) {
-                return RequestMatcher.this.matches(req) && matcher.matches(req);
+            public Match matches(Request req) {
+                return RequestMatcher.this.matches(req).and(matcher.matches(req));
             }
         };
     }
@@ -38,8 +38,8 @@ public abstract class RequestMatcher {
     public RequestMatcher or(final RequestMatcher matcher) {
         return new RequestMatcher() {
             @Override
-            public boolean matches(Request req) {
-                return RequestMatcher.this.matches(req) || matcher.matches(req);
+            public Match matches(Request req) {
+                return RequestMatcher.this.matches(req).or(matcher.matches(req));
             }
         };
     }

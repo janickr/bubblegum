@@ -23,43 +23,36 @@
 
 package be.janickreynders.bubblegum;
 
-import java.util.Collections;
-
 public class Chain {
-    private Route route;
+    private RequestMatcher matcher;
     private Filter filter;
     private Chain next;
 
     public Chain() {
     }
 
-    public Chain(Route route, Filter filter) {
-        this(route, filter, null);
+    public Chain(RequestMatcher matcher, Filter filter) {
+        this(matcher, filter, null);
     }
 
-    public Chain(Route route, Filter filter, Chain next) {
-        this.route = route;
+    public Chain(RequestMatcher matcher, Filter filter, Chain next) {
+        this.matcher = matcher;
         this.filter = filter;
         this.next = next;
     }
 
     public void handle(Request request, Response response) throws Exception {
-        Match match = getMatch(request);
+        Match match = matcher.matches(request);
         if (filter != null && match.isMatch()) {
             filter.handle(new Request(request.raw(), match.getParams()), response, next);
         }
         else if (next != null) next.handle(request, response);
     }
 
-    private Match getMatch(Request request) {
-        if (route == null) return Match.match(Collections.<String, String>emptyMap());
-        return route.getMatch(request);
-    }
-
 
     public Chain append(Chain chain) {
         return (next != null)
-                ? new Chain(this.route, this.filter, next.append(chain))
-                : new Chain(this.route, this.filter, chain);
+                ? new Chain(this.matcher, this.filter, next.append(chain))
+                : new Chain(this.matcher, this.filter, chain);
     }
 }

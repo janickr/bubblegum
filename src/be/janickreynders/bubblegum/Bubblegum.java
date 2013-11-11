@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static be.janickreynders.bubblegum.Matchers.all;
+
 public class Bubblegum implements javax.servlet.Filter {
     private Chain chain;
 
@@ -52,7 +54,7 @@ public class Bubblegum implements javax.servlet.Filter {
     }
 
     private void handle(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain filterChain) throws Exception {
-        chain.append(new Chain(null, new Filter() {
+        chain.append(new Chain(all(), new Filter() {
             @Override
             public void handle(Request req, Response resp, Chain chain) throws Exception {
                 filterChain.doFilter(servletRequest, servletResponse);

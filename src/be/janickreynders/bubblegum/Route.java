@@ -31,14 +31,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Route {
+public class Route extends RequestMatcher {
     private final List<String> paramNames;
     private final Pattern pattern;
-    private final RequestMatcher matcher;
 
 
-    public Route(String route, RequestMatcher matcher) {
-        this.matcher = matcher;
+    public Route(String route) {
         this.paramNames = getParamNames(route);
         this.pattern = createPattern(route);
     }
@@ -55,9 +53,9 @@ public class Route {
         return Pattern.compile(route.replaceAll("(?<!\\*)\\*(?!\\*)", "[^/]+").replaceAll("\\*\\*", ".*").replaceAll(":\\w+", "([^/]+)") + "/?");
     }
 
-    public Match getMatch(Request req) {
+    public Match matches(Request req) {
         Matcher regex = pattern.matcher(req.getPath());
-        if (! (regex.matches() && matcher.matches(req))) return Match.noMatch();
+        if (!regex.matches()) return Match.noMatch();
 
         Map<String, String> params = new HashMap<String, String>();
         for (int i = 0; i < regex.groupCount(); i++) {
