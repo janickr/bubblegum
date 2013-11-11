@@ -83,6 +83,17 @@ public class Filters {
         };
     }
 
+    public static Filter neverCache() {
+        return new Filter() {
+            @Override
+            public void handle(Request req, Response resp, Chain chain) throws Exception {
+                resp.header("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
+                chain.handle(req, resp);
+            }
+        };
+    }
+
+
     public static Filter cacheNeverExpires() {
         return new Filter() {
             @Override
