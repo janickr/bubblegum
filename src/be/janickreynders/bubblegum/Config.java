@@ -23,16 +23,38 @@
 
 package be.janickreynders.bubblegum;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import static be.janickreynders.bubblegum.Filters.handler;
 import static be.janickreynders.bubblegum.Matchers.*;
 
 public class Config {
-    private Chain filters = new Chain();
-    private Chain handlers = new Chain();
+    private LinkedList<Guard> filters = new LinkedList<Guard>();
+    private List<Guard> handlers = new ArrayList<Guard>();
 
 
-    public Chain buildChain() {
-        return filters.append(handlers);
+    public Chain buildChain(Request req, Chain originalFilterChain) {
+        return wrapWithFilters(req, findMatchingHandler(req, originalFilterChain));
+    }
+
+    private Chain wrapWithFilters(Request req, Chain chain) {
+        for (Iterator<Guard> iterator = filters.descendingIterator(); iterator.hasNext(); ) {
+            chain = iterator.next().wrapChain(req, chain);
+        }
+        return chain;
+    }
+
+    public Chain findMatchingHandler(Request req, Chain originalFilterChain) {
+        for (Guard guard : handlers) {
+            Chain chain = guard.wrapChain(req, null);
+            if (chain != null) {
+                return chain;
+            }
+        }
+        return originalFilterChain;
     }
 
     public void get(String route, Handler handler) {
@@ -76,7 +98,7 @@ public class Config {
     }
 
     public void route(RequestMatcher matcher, Handler handler) {
-        handlers = handlers.append(new Chain(matcher, handler(handler)));
+        handlers.add(new Guard(matcher, handler(handler)));
     }
 
     public void apply(String route, RequestMatcher matcher, Filter filter) {
@@ -92,6 +114,6 @@ public class Config {
     }
 
     public void apply(RequestMatcher matcher, Filter filter) {
-        filters = filters.append(new Chain(matcher, filter));
+        filters.add(new Guard(matcher, filter));
     }
 }

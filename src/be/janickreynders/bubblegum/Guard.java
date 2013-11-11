@@ -23,21 +23,21 @@
 
 package be.janickreynders.bubblegum;
 
-import java.util.Map;
-
-public class Chain {
+public class Guard {
+    private RequestMatcher matcher;
     private Filter filter;
-    private Map<String, String> params;
-    private Chain next;
 
-    public Chain(Filter filter, Map<String, String> params, Chain next) {
+    public Guard(RequestMatcher matcher, Filter filter) {
+        this.matcher = matcher;
         this.filter = filter;
-        this.params = params;
-        this.next = next;
     }
 
-    public void handle(Request request, Response response) throws Exception {
-        request.setMatchParams(params);
-        filter.handle(request, response, next);
+    public Chain wrapChain(Request req, Chain next) {
+        Match match = matcher.matches(req);
+        if (match.isMatch()) {
+            return new Chain(filter, match.getParams(), next);
+        }
+        return next;
     }
+
 }

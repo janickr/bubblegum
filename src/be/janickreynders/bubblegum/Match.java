@@ -64,14 +64,23 @@ public class Match {
     }
 
     public Match and(Match other) {
-        return new Match(match && other.match);
+        if (match && other.match) return match(bothParams(this, other));
+        return NO_MATCH;
     }
 
     public Match or(Match other) {
-        return new Match(match || other.match);
+        if (match || other.match) return match(bothParams(this, other));
+        return NO_MATCH;
     }
 
     public Match negate() {
         return new Match(!match);
+    }
+
+    private Map<String, String> bothParams(Match match, Match other) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.putAll(match.params);
+        params.putAll(other.params);
+        return params;
     }
 }

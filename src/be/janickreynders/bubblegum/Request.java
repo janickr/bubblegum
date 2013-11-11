@@ -33,15 +33,20 @@ import java.util.*;
 
 public class Request {
     private final HttpServletRequest req;
-    private final Map<String, String> pathParams;
+    private String body;
+    private Map<String, String> matchParams;
 
-    public Request(HttpServletRequest req, Map<String, String> pathParams) {
+    public Request(HttpServletRequest req, Map<String, String> matchParams) {
         this.req = req;
-        this.pathParams = pathParams;
+        this.matchParams = matchParams;
     }
 
     public Request(HttpServletRequest req) {
         this(req, new HashMap<String, String>());
+    }
+
+    void setMatchParams(Map<String, String> params) {
+        this.matchParams = params;
     }
 
     public HttpServletRequest raw() {
@@ -49,6 +54,8 @@ public class Request {
     }
 
     public String body() throws IOException {
+        if (body != null) return body;
+
         BufferedReader reader = req.getReader();
         StringWriter writer = new StringWriter();
         char[] buffer = new char[1024];
@@ -58,7 +65,8 @@ public class Request {
             writer.write(buffer, 0, n);
             n = reader.read(buffer);
         }
-        return writer.toString();
+        body = writer.toString();
+        return body;
     }
 
     public String param(String name) {
@@ -67,7 +75,7 @@ public class Request {
     }
 
     private String pathParam(String name) {
-        return pathParams.get(name);
+        return matchParams.get(name);
     }
 
     public Object attribute(String name) {
@@ -79,7 +87,7 @@ public class Request {
     }
 
     public void forward(String url, Response response) throws IOException, ServletException {
-        req.setAttribute("bubblegumParams", pathParams);
+        req.setAttribute("bubblegumParams", matchParams);
         req.getRequestDispatcher(url).forward(req, response.raw());
     }
 

@@ -28,14 +28,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static be.janickreynders.bubblegum.Matchers.all;
-
 public class Bubblegum implements javax.servlet.Filter {
-    private Chain chain;
+    private Config config;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        chain = getRoutes(filterConfig).createConfig().buildChain();
+        config = getRoutes(filterConfig).createConfig();
     }
 
     @Override
@@ -53,13 +51,20 @@ public class Bubblegum implements javax.servlet.Filter {
         }
     }
 
-    private void handle(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain filterChain) throws Exception {
-        chain.append(new Chain(all(), new Filter() {
-            @Override
-            public void handle(Request req, Response resp, Chain chain) throws Exception {
-                filterChain.doFilter(servletRequest, servletResponse);
-            }
-        })).handle(new Request((HttpServletRequest) servletRequest), new Response((HttpServletResponse) servletResponse));
+    private void handle(ServletRequest servletRequest, ServletResponse servletResponse, final FilterChain filterChain) throws Exception {
+        Request request = new Request((HttpServletRequest) servletRequest);
+        Response response = new Response((HttpServletResponse) servletResponse);
+
+        config.buildChain(request,
+                new Chain(
+                        new Filter() {
+                            @Override
+                            public void handle(Request req, Response resp, Chain chain) throws Exception {
+                                filterChain.doFilter(req.raw(), resp.raw());
+                            }
+                        }, null, null))
+        .handle(request, response);
+
     }
 
 
