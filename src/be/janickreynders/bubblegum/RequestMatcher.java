@@ -23,24 +23,17 @@
 
 package be.janickreynders.bubblegum;
 
+import static be.janickreynders.bubblegum.Matchers.all;
+import static be.janickreynders.bubblegum.Matchers.any;
+
 public abstract class RequestMatcher {
     public abstract Match matches(Request req);
 
     public RequestMatcher and(final RequestMatcher matcher) {
-        return new RequestMatcher() {
-            @Override
-            public Match matches(Request req) {
-                return RequestMatcher.this.matches(req).and(matcher.matches(req));
-            }
-        };
+        return all(this, matcher);
     }
 
     public RequestMatcher or(final RequestMatcher matcher) {
-        return new RequestMatcher() {
-            @Override
-            public Match matches(Request req) {
-                return RequestMatcher.this.matches(req).or(matcher.matches(req));
-            }
-        };
+        return any(this, matcher);
     }
 }

@@ -23,6 +23,9 @@
 
 package be.janickreynders.bubblegum;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Matchers {
 
     public static RequestMatcher method(final String httpMethod) {
@@ -65,11 +68,17 @@ public class Matchers {
         return new RequestMatcher() {
             @Override
             public Match matches(Request req) {
-                Match result = Match.match();
+                Map<String, String> params = new HashMap<String, String>();
+
                 for (RequestMatcher matcher : matchers) {
-                    result.and(matcher.matches(req));
+                    Match match = matcher.matches(req);
+                    if (match.isMatch()) {
+                        params.putAll(match.getParams());
+                    } else {
+                        return Match.noMatch();
+                    }
                 }
-                return result;
+                return Match.match(params);
             }
         };
     }
@@ -78,11 +87,15 @@ public class Matchers {
         return new RequestMatcher() {
             @Override
             public Match matches(Request req) {
-                Match result = Match.noMatch();
+                Map<String, String> params = new HashMap<String, String>();
+                boolean isMatch = false;
+
                 for (RequestMatcher matcher : matchers) {
-                    result.or(matcher.matches(req));
+                    Match match = matcher.matches(req);
+                    isMatch |= match.isMatch();
+                    params.putAll(match.getParams());
                 }
-                return result;
+                return isMatch ? Match.match(params) : Match.noMatch();
             }
         };
     }
@@ -91,7 +104,7 @@ public class Matchers {
         return new RequestMatcher() {
             @Override
             public Match matches(Request req) {
-                return matcher.matches(req).negate();
+                return Match.when(!matcher.matches(req).isMatch());
             }
         };
     }

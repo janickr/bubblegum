@@ -32,8 +32,8 @@ import static be.janickreynders.bubblegum.Filters.handler;
 import static be.janickreynders.bubblegum.Matchers.*;
 
 public class Config {
-    private LinkedList<Guard> filters = new LinkedList<Guard>();
-    private List<Guard> handlers = new ArrayList<Guard>();
+    private LinkedList<Route> filters = new LinkedList<Route>();
+    private List<Route> handlers = new ArrayList<Route>();
 
 
     public Chain buildChain(Request req, Chain originalFilterChain) {
@@ -41,15 +41,15 @@ public class Config {
     }
 
     private Chain wrapWithFilters(Request req, Chain chain) {
-        for (Iterator<Guard> iterator = filters.descendingIterator(); iterator.hasNext(); ) {
+        for (Iterator<Route> iterator = filters.descendingIterator(); iterator.hasNext(); ) {
             chain = iterator.next().wrapChain(req, chain);
         }
         return chain;
     }
 
     public Chain findMatchingHandler(Request req, Chain originalFilterChain) {
-        for (Guard guard : handlers) {
-            Chain chain = guard.wrapChain(req, null);
+        for (Route route : handlers) {
+            Chain chain = route.wrapChain(req, null);
             if (chain != null) {
                 return chain;
             }
@@ -98,7 +98,7 @@ public class Config {
     }
 
     public void route(RequestMatcher matcher, Handler handler) {
-        handlers.add(new Guard(matcher, handler(handler)));
+        handlers.add(new Route(matcher, handler(handler)));
     }
 
     public void apply(String route, RequestMatcher matcher, Filter filter) {
@@ -114,6 +114,6 @@ public class Config {
     }
 
     public void apply(RequestMatcher matcher, Filter filter) {
-        filters.add(new Guard(matcher, filter));
+        filters.add(new Route(matcher, filter));
     }
 }

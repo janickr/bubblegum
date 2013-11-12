@@ -47,10 +47,6 @@ public class Match {
         return NO_MATCH;
     }
 
-    public static Match match() {
-        return MATCH;
-    }
-
     public static Match when(boolean b) {
         return b ? MATCH : NO_MATCH;
     }
@@ -60,27 +56,6 @@ public class Match {
     }
 
     public Map<String, String> getParams() {
-        return params;
-    }
-
-    public Match and(Match other) {
-        if (match && other.match) return match(bothParams(this, other));
-        return NO_MATCH;
-    }
-
-    public Match or(Match other) {
-        if (match || other.match) return match(bothParams(this, other));
-        return NO_MATCH;
-    }
-
-    public Match negate() {
-        return new Match(!match);
-    }
-
-    private Map<String, String> bothParams(Match match, Match other) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.putAll(match.params);
-        params.putAll(other.params);
         return params;
     }
 }

@@ -23,11 +23,11 @@
 
 package be.janickreynders.bubblegum;
 
-public class Guard {
+public class Route {
     private RequestMatcher matcher;
     private Filter filter;
 
-    public Guard(RequestMatcher matcher, Filter filter) {
+    public Route(RequestMatcher matcher, Filter filter) {
         this.matcher = matcher;
         this.filter = filter;
     }
