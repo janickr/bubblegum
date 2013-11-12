@@ -57,44 +57,44 @@ public class Config {
         return originalFilterChain;
     }
 
-    public void get(String route, Handler handler) {
-        get(route, all(), handler);
+    public void get(String path, Handler handler) {
+        get(path, all(), handler);
     }
 
-    public void put(String route, Handler handler) {
-        put(route, all(), handler);
+    public void put(String path, Handler handler) {
+        put(path, all(), handler);
     }
 
-    public void delete(String route, Handler handler) {
-        delete(route, all(), handler);
+    public void delete(String path, Handler handler) {
+        delete(path, all(), handler);
     }
 
-    public void post(String route, Handler handler) {
-        post(route, all(), handler);
+    public void post(String path, Handler handler) {
+        post(path, all(), handler);
     }
 
-    public void get(String route, RequestMatcher matcher, Handler handler) {
-        route("get", route, matcher, handler);
+    public void get(String path, RequestMatcher matcher, Handler handler) {
+        route("get", path, matcher, handler);
     }
 
-    public void put(String route, RequestMatcher matcher, Handler handler) {
-        route("put", route, matcher, handler);
+    public void put(String path, RequestMatcher matcher, Handler handler) {
+        route("put", path, matcher, handler);
     }
 
-    public void delete(String route, RequestMatcher matcher, Handler handler) {
-        route("delete", route, matcher, handler);
+    public void delete(String path, RequestMatcher matcher, Handler handler) {
+        route("delete", path, matcher, handler);
     }
 
-    public void post(String route, RequestMatcher matcher, Handler handler) {
-        route("post", route, matcher, handler);
+    public void post(String path, RequestMatcher matcher, Handler handler) {
+        route("post", path, matcher, handler);
     }
 
-    public void route(String httpMethod, String route, RequestMatcher matcher, Handler handler) {
-        route(route, method(httpMethod).and(matcher), handler);
+    public void route(String httpMethod, String path, RequestMatcher matcher, Handler handler) {
+        route(path, method(httpMethod).and(matcher), handler);
     }
 
-    public void route(String route, RequestMatcher matcher, Handler handler) {
-        route(matchRoute(route).and(matcher), handler);
+    public void route(String path, RequestMatcher matcher, Handler handler) {
+        route(path(path).and(matcher), handler);
     }
 
     public void route(RequestMatcher matcher, Handler handler) {
@@ -102,11 +102,11 @@ public class Config {
     }
 
     public void apply(String route, RequestMatcher matcher, Filter filter) {
-        apply(matchRoute(route).and(matcher), filter);
+        apply(path(route).and(matcher), filter);
     }
 
-    public void apply(String route, Filter filter) {
-        apply(route, all(), filter);
+    public void apply(String path, Filter filter) {
+        apply(path, all(), filter);
     }
 
     public void apply(Filter filter) {

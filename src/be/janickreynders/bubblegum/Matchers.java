@@ -57,8 +57,8 @@ public class Matchers {
         return header("Content-Type", contentType);
     }
 
-    public static RequestMatcher matchRoute(String route) {
-        return new Route(route);
+    public static RequestMatcher path(String path) {
+        return new PathMatcher(path);
     }
 
     public static RequestMatcher all(final RequestMatcher... matchers) {

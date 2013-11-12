@@ -31,12 +31,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Route extends RequestMatcher {
+public class PathMatcher extends RequestMatcher {
     private final List<String> paramNames;
     private final Pattern pattern;
 
 
-    public Route(String route) {
+    public PathMatcher(String route) {
         this.paramNames = getParamNames(route);
         this.pattern = createPattern(route);
     }
