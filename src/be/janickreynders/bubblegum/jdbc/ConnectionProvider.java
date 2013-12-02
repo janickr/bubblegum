@@ -19,6 +19,7 @@ public class ConnectionProvider implements Filter {
     @Override
     public void handle(Request req, Response resp, Chain chain) throws Exception {
         try {
+            transactionalConnection.set(new ConnectionHolder());
             chain.handle(req, resp);
             commit();
         } catch (Exception e) {
@@ -84,6 +85,7 @@ public class ConnectionProvider implements Filter {
             @Override
             public void run() {
                 try {
+                    transactionalConnection.set(new ConnectionHolder());
                     r.run();
                     commit();
                 } catch (RuntimeException e) {
