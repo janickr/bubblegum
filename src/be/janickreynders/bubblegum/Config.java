@@ -36,8 +36,9 @@ public class Config {
     private List<Route> handlers = new ArrayList<Route>();
 
 
-    public Chain buildChain(Request req, Chain originalFilterChain) {
-        return wrapWithFilters(req, findMatchingHandler(req, originalFilterChain));
+    public Chain buildChain(Request req, Chain originalFilterChain, boolean wrapWithFilters) {
+        Chain matchingHandler = findMatchingHandler(req, originalFilterChain);
+        return (wrapWithFilters) ? wrapWithFilters(req, matchingHandler) : matchingHandler;
     }
 
     private Chain wrapWithFilters(Request req, Chain chain) {

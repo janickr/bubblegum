@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static java.lang.Boolean.TRUE;
+
 public class Bubblegum implements javax.servlet.Filter {
     private Config config;
 
@@ -55,16 +57,23 @@ public class Bubblegum implements javax.servlet.Filter {
         Request request = new Request((HttpServletRequest) servletRequest);
         Response response = new Response((HttpServletResponse) servletResponse);
 
-        config.buildChain(request,
-                new Chain(
-                        new Filter() {
+        Object flag = request.attribute(getClass().getName() + ".handle");
+        try {
+            request.attribute(getClass().getName()+".handle", TRUE);
+            config.buildChain(request, toChain(filterChain), flag == null).handle(request, response);
+        } finally {
+            request.attribute(getClass().getName() + ".handle", flag);
+        }
+
+    }
+
+    private Chain toChain(final FilterChain filterChain) {
+        return new Chain(new Filter() {
                             @Override
                             public void handle(Request req, Response resp, Chain chain) throws Exception {
                                 filterChain.doFilter(req.raw(), resp.raw());
                             }
-                        }, null, null))
-        .handle(request, response);
-
+                         }, null, null);
     }
 
 
