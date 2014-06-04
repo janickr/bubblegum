@@ -55,7 +55,10 @@ public class ConnectionProvider implements Filter {
     private static void closeQuietly() {
         try {
             ConnectionHolder holder = transactionalConnection.get();
-            if (hasConnection(holder) && !holder.getConnection().isClosed()) holder.getConnection().close();
+            if (hasConnection(holder) && !holder.getConnection().isClosed()) {
+                holder.getConnection().setAutoCommit(true);
+                holder.getConnection().close();
+            }
         } catch (Exception ignore) {
             LOG.log(Level.WARNING, "Exception while closing connection", ignore);
         } finally {
@@ -73,7 +76,9 @@ public class ConnectionProvider implements Filter {
                 holder.setConnection(newConnection);
                 return newConnection;
             } else {
-                return ds.getConnection();
+                Connection connection = ds.getConnection();
+                connection.setAutoCommit(true);
+                return connection;
             }
         } catch (SQLException e) {
             throw new JdbcException(e);
