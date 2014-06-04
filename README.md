@@ -64,7 +64,7 @@ public class TestApp implements App {
 </web-app>
 ```
 
-3) That's it! Deploy and point your browser to http://localhost/hello/chuck
+3) That's it! Deploy and point your browser to http://localhost/helloworld
 
 Copyright and License
 ---------------------
