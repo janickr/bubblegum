@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public class ConnectionProvider implements Filter {
     private static Logger LOG = Logger.getLogger(ConnectionProvider.class.getName());
 
-    private static ThreadLocal<ConnectionHolder> transactionalConnection = new ThreadLocal<ConnectionHolder>();
+    private static ThreadLocal<ConnectionHolder> transactionalConnection = new ThreadLocal<>();
 
     @Override
     public void handle(Request req, Response resp, Chain chain) throws Exception {
@@ -86,21 +86,18 @@ public class ConnectionProvider implements Filter {
     }
 
     public static Runnable withDbConnection(final Runnable r) {
-        return new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    transactionalConnection.set(new ConnectionHolder());
-                    r.run();
-                    commit();
-                } catch (RuntimeException e) {
-                    rollbackQuietly();
-                    throw e;
-                } catch (SQLException e) {
-                    throw new JdbcException(e);
-                } finally {
-                    closeQuietly();
-                }
+        return () -> {
+            try {
+                transactionalConnection.set(new ConnectionHolder());
+                r.run();
+                commit();
+            } catch (RuntimeException e) {
+                rollbackQuietly();
+                throw e;
+            } catch (SQLException e) {
+                throw new JdbcException(e);
+            } finally {
+                closeQuietly();
             }
         };
     }

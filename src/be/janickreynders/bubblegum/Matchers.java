@@ -29,31 +29,15 @@ import java.util.Map;
 public class Matchers {
 
     public static RequestMatcher method(final String httpMethod) {
-        return new RequestMatcher() {
-            @Override
-            public Match matches(Request req) {
-                return Match.when(httpMethod.equalsIgnoreCase(req.method()));
-            }
-        };
+        return req -> Match.when(httpMethod.equalsIgnoreCase(req.method()));
     }
 
     public static RequestMatcher header(final String headerName, final CharSequence value) {
-        return new RequestMatcher() {
-            @Override
-            public Match matches(Request req) {
-                return Match.when(req.header(headerName).contains(value));
-            }
-        };
+        return req -> Match.when(req.header(headerName).contains(value));
     }
 
     public static RequestMatcher accept(final CharSequence mimeType) {
-        return new RequestMatcher() {
-            @Override
-            public Match matches(Request req) {
-                String accept = req.header("Accept");
-                return Match.when(accept.contains(mimeType) || accept.equals("*/*"));
-            }
-        };
+        return req -> Match.when(req.header("Accept").contains(mimeType) || req.header("Accept").equals("*/*"));
     }
 
     public static RequestMatcher contentType(CharSequence contentType) {
@@ -65,47 +49,36 @@ public class Matchers {
     }
 
     public static RequestMatcher all(final RequestMatcher... matchers) {
-        return new RequestMatcher() {
-            @Override
-            public Match matches(Request req) {
-                Map<String, String> params = new HashMap<String, String>();
+        return req -> {
+            Map<String, String> params = new HashMap<>();
 
-                for (RequestMatcher matcher : matchers) {
-                    Match match = matcher.matches(req);
-                    if (match.isMatch()) {
-                        params.putAll(match.getParams());
-                    } else {
-                        return Match.noMatch();
-                    }
+            for (RequestMatcher matcher : matchers) {
+                Match match = matcher.matches(req);
+                if (match.isMatch()) {
+                    params.putAll(match.getParams());
+                } else {
+                    return Match.noMatch();
                 }
-                return Match.match(params);
             }
+            return Match.match(params);
         };
     }
 
     public static RequestMatcher any(final RequestMatcher... matchers) {
-        return new RequestMatcher() {
-            @Override
-            public Match matches(Request req) {
-                Map<String, String> params = new HashMap<String, String>();
-                boolean isMatch = false;
+        return req -> {
+            Map<String, String> params = new HashMap<>();
+            boolean isMatch = false;
 
-                for (RequestMatcher matcher : matchers) {
-                    Match match = matcher.matches(req);
-                    isMatch |= match.isMatch();
-                    params.putAll(match.getParams());
-                }
-                return isMatch ? Match.match(params) : Match.noMatch();
+            for (RequestMatcher matcher : matchers) {
+                Match match = matcher.matches(req);
+                isMatch |= match.isMatch();
+                params.putAll(match.getParams());
             }
+            return isMatch ? Match.match(params) : Match.noMatch();
         };
     }
 
     public static RequestMatcher not(final RequestMatcher matcher) {
-        return new RequestMatcher() {
-            @Override
-            public Match matches(Request req) {
-                return Match.when(!matcher.matches(req).isMatch());
-            }
-        };
+        return req -> Match.when(!matcher.matches(req).isMatch());
     }
 }

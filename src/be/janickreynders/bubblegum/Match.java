@@ -31,7 +31,7 @@ public class Match {
     private static Match MATCH = new Match(true);
 
     private boolean match;
-    private Map<String, String> params = new HashMap<String, String>();
+    private Map<String, String> params = new HashMap<>();
 
     private Match(boolean b) {
         match = b;

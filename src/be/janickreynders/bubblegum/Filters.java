@@ -29,67 +29,47 @@ import java.util.*;
 public class Filters {
 
     public static Filter handler(final Handler handler) {
-        return new Filter() {
-            @Override
-            public void handle(Request req, Response resp, Chain chain) throws Exception {
-                handler.handle(req, resp);
-            }
-        };
+        return (req, resp, chain) -> handler.handle(req, resp);
     }
 
     public static Filter catchAndHandle(final Class<? extends Exception> clazz, final Handler handler) {
-        return new Filter() {
-            @Override
-            public void handle(Request req, Response resp, Chain chain) throws Exception {
-                try{
-                    chain.handle(req, resp);
-                } catch (Exception e) {
-                    if (clazz.isInstance(e))
-                        handler.handle(req, resp);
-                    else
-                        throw e;
-                }
+        return (req, resp, chain) -> {
+            try{
+                chain.handle(req, resp);
+            } catch (Exception e) {
+                if (clazz.isInstance(e))
+                    handler.handle(req, resp);
+                else
+                    throw e;
             }
         };
     }
 
     public static Filter header(final String name, final String value) {
-        return new Filter() {
-            @Override
-            public void handle(Request req, Response resp, Chain chain) throws Exception {
-                resp.header(name, value);
-                chain.handle(req, resp);
-            }
+        return (req, resp, chain) -> {
+            resp.header(name, value);
+            chain.handle(req, resp);
         };
     }
 
     public static Filter charset(final String charset) {
-        return new Filter() {
-            @Override
-            public void handle(Request req, Response resp, Chain chain) throws Exception {
-                resp.raw().setCharacterEncoding(charset);
-                chain.handle(req, resp);
-            }
+        return (req, resp, chain) -> {
+            resp.raw().setCharacterEncoding(charset);
+            chain.handle(req, resp);
         };
     }
 
     public static Filter contentType(final String contentType) {
-        return new Filter() {
-            @Override
-            public void handle(Request req, Response resp, Chain chain) throws Exception {
-                resp.contentType(contentType);
-                chain.handle(req, resp);
-            }
+        return (req, resp, chain) -> {
+            resp.contentType(contentType);
+            chain.handle(req, resp);
         };
     }
 
     public static Filter neverCache() {
-        return new Filter() {
-            @Override
-            public void handle(Request req, Response resp, Chain chain) throws Exception {
-                resp.header("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
-                chain.handle(req, resp);
-            }
+        return (req, resp, chain) -> {
+            resp.header("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
+            chain.handle(req, resp);
         };
     }
 
@@ -122,12 +102,9 @@ public class Filters {
     }
 
     public static Filter vary(final String requestHeaders) {
-        return new Filter() {
-            @Override
-            public void handle(Request req, Response resp, Chain chain) throws Exception {
-                resp.vary(requestHeaders);
-                chain.handle(req, resp);
-            }
+        return (req, resp, chain) -> {
+            resp.vary(requestHeaders);
+            chain.handle(req, resp);
         };
     }
 

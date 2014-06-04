@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PathMatcher extends RequestMatcher {
+public class PathMatcher implements RequestMatcher {
     private final List<String> paramNames;
     private final Pattern pattern;
 
@@ -42,7 +42,7 @@ public class PathMatcher extends RequestMatcher {
     }
 
     private static List<String> getParamNames(String route) {
-        List<String> parameterNames = new ArrayList<String>();
+        List<String> parameterNames = new ArrayList<>();
         for (String part : route.split("/")) {
             if (part.startsWith(":") && part.length() > 1) parameterNames.add(part.substring(1));
         }
@@ -57,7 +57,7 @@ public class PathMatcher extends RequestMatcher {
         Matcher regex = pattern.matcher(req.getPath());
         if (!regex.matches()) return Match.noMatch();
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         for (int i = 0; i < regex.groupCount(); i++) {
             params.put(paramNames.get(i), regex.group(i+1));
         }

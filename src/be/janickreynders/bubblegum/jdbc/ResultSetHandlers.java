@@ -33,56 +33,44 @@ import java.util.Map;
 
 public class ResultSetHandlers {
 
-    public static ResultSetHandler<List<Map<String, Object>>> LIST = new ResultSetHandler<List<Map<String, Object>>>() {
-        @Override
-        public List<Map<String, Object>> handle(ResultSet rs) throws SQLException {
-            List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-            ResultSetMetaData metaData = rs.getMetaData();
-            while (rs.next()) {
-                result.add(readRow(rs, metaData));
-            }
-
-            return result;
+    public static ResultSetHandler<List<Map<String, Object>>> LIST = rs -> {
+        List<Map<String, Object>> result = new ArrayList<>();
+        ResultSetMetaData metaData = rs.getMetaData();
+        while (rs.next()) {
+            result.add(readRow(rs, metaData));
         }
+
+        return result;
     };
 
-    public static ResultSetHandler<Map<String, Object>> MAP = new ResultSetHandler<Map<String, Object>>() {
-        @Override
-        public Map<String, Object> handle(ResultSet rs) throws SQLException {
-            if (!rs.next()) return null;
+    public static ResultSetHandler<Map<String, Object>> MAP = rs -> {
+        if (!rs.next()) return null;
 
-            return readRow(rs, rs.getMetaData());
-        }
+        return readRow(rs, rs.getMetaData());
     };
 
 
     public static <T> ResultSetHandler<T> single(Class<T> clazz) {
-        return new ResultSetHandler<T>() {
-            @Override
-            public T handle(ResultSet rs) throws SQLException {
-                if (!rs.next()) return null;
+        return rs -> {
+            if (!rs.next()) return null;
 
-                return (T) rs.getObject(1);
-            }
+            return clazz.cast(rs.getObject(1));
         };
     }
 
     public static <T> ResultSetHandler<List<T>> listOf(Class<T> clazz) {
-        return new ResultSetHandler<List<T>>() {
-            @Override
-            public List<T> handle(ResultSet rs) throws SQLException {
-                List<T> result = new ArrayList<T>();
-                while (rs.next()) {
-                    result.add((T) rs.getObject(1));
-                }
-
-                return result;
+        return rs -> {
+            List<T> result = new ArrayList<>();
+            while (rs.next()) {
+                result.add(clazz.cast(rs.getObject(1)));
             }
+
+            return result;
         };
     }
 
     private static Map<String, Object> readRow(ResultSet set, ResultSetMetaData metaData) throws SQLException {
-        HashMap<String, Object> result = new HashMap<String, Object>();
+        HashMap<String, Object> result = new HashMap<>();
         int cols = metaData.getColumnCount();
         for (int i = 1; i <= cols; i++) {
             result.put(metaData.getColumnLabel(i), set.getObject(i));

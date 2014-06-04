@@ -25,29 +25,14 @@ package be.janickreynders.bubblegum;
 
 public class Handlers {
     public static Handler status(final int httpStatusCode) {
-        return new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                resp.status(httpStatusCode);
-            }
-        };
+        return (req, resp) -> resp.status(httpStatusCode);
     }
 
     public static Handler forward(final String url) {
-        return new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                req.forward(url, resp);
-            }
-        };
+        return (req, resp) -> req.forward(url, resp);
     }
 
     public static Handler redirect(final String url) {
-        return new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                resp.redirect(url);
-            }
-        };
+        return (req, resp) -> resp.redirect(url);
     }
 }

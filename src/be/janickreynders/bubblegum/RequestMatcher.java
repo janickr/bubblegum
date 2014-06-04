@@ -26,14 +26,14 @@ package be.janickreynders.bubblegum;
 import static be.janickreynders.bubblegum.Matchers.all;
 import static be.janickreynders.bubblegum.Matchers.any;
 
-public abstract class RequestMatcher {
-    public abstract Match matches(Request req);
+public interface RequestMatcher {
+    public Match matches(Request req);
 
-    public RequestMatcher and(final RequestMatcher matcher) {
+    default public RequestMatcher and(final RequestMatcher matcher) {
         return all(this, matcher);
     }
 
-    public RequestMatcher or(final RequestMatcher matcher) {
+    default public RequestMatcher or(final RequestMatcher matcher) {
         return any(this, matcher);
     }
 }

@@ -32,8 +32,8 @@ import static be.janickreynders.bubblegum.Filters.handler;
 import static be.janickreynders.bubblegum.Matchers.*;
 
 public class Config {
-    private LinkedList<Route> filters = new LinkedList<Route>();
-    private List<Route> handlers = new ArrayList<Route>();
+    private LinkedList<Route> filters = new LinkedList<>();
+    private List<Route> handlers = new ArrayList<>();
 
 
     public Chain buildChain(Request req, Chain originalFilterChain, boolean wrapWithFilters) {
