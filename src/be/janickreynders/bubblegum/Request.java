@@ -70,8 +70,17 @@ public class Request {
     }
 
     public String param(String name) {
-        String val = queryParam(name);
-        return (val == null) ? pathParam(name) : val;
+        return param(name, null);
+    }
+
+    public String param(String name, String defaultValue) {
+        String queryVal = queryParam(name);
+        if (queryVal != null) return queryVal;
+
+        String pathVal = pathParam(name);
+        if (pathVal != null) return pathVal;
+
+        return defaultValue;
     }
 
     private String pathParam(String name) {
