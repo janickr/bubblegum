@@ -23,7 +23,9 @@
 
 package be.janickreynders.bubblegum;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Matchers {
@@ -34,6 +36,11 @@ public class Matchers {
             public Match matches(Request req) {
                 return Match.when(httpMethod.equalsIgnoreCase(req.method()));
             }
+
+            @Override
+            public String toString() {
+                return "method: " + httpMethod;
+            }
         };
     }
 
@@ -42,6 +49,11 @@ public class Matchers {
             @Override
             public Match matches(Request req) {
                 return Match.when(req.header(headerName).contains(value));
+            }
+
+            @Override
+            public String toString() {
+                return headerName + ": " + value;
             }
         };
     }
@@ -52,6 +64,11 @@ public class Matchers {
             public Match matches(Request req) {
                 String accept = req.header("Accept");
                 return Match.when(accept.contains(mimeType) || accept.equals("*/*"));
+            }
+
+            @Override
+            public String toString() {
+                return "Accept: " + mimeType;
             }
         };
     }
@@ -64,7 +81,20 @@ public class Matchers {
         return new PathMatcher(path);
     }
 
-    public static RequestMatcher all(final RequestMatcher... matchers) {
+    private static List<RequestMatcher> withoutNulls(RequestMatcher... matchers) {
+        ArrayList<RequestMatcher> noNulls = new ArrayList<RequestMatcher>(matchers.length);
+        for (RequestMatcher matcher : matchers) {
+            if (matcher != null) {
+                noNulls.add(matcher);
+            }
+        }
+        return noNulls;
+    }
+
+    public static RequestMatcher all(final RequestMatcher... requestMatchers) {
+        final List<RequestMatcher> matchers = withoutNulls(requestMatchers);
+
+        if (matchers.size() == 1) return matchers.get(0);
         return new RequestMatcher() {
             @Override
             public Match matches(Request req) {
@@ -80,10 +110,18 @@ public class Matchers {
                 }
                 return Match.match(params);
             }
+
+            @Override
+            public String toString() {
+                return "all" + matchers;
+            }
         };
     }
 
-    public static RequestMatcher any(final RequestMatcher... matchers) {
+    public static RequestMatcher any(final RequestMatcher... requestMatchers) {
+        final List<RequestMatcher> matchers = withoutNulls(requestMatchers);
+
+        if (matchers.size() == 1) return matchers.get(0);
         return new RequestMatcher() {
             @Override
             public Match matches(Request req) {
@@ -97,6 +135,11 @@ public class Matchers {
                 }
                 return isMatch ? Match.match(params) : Match.noMatch();
             }
+
+            @Override
+            public String toString() {
+                return "any" + matchers;
+            }
         };
     }
 
@@ -105,6 +148,11 @@ public class Matchers {
             @Override
             public Match matches(Request req) {
                 return Match.when(!matcher.matches(req).isMatch());
+            }
+
+            @Override
+            public String toString() {
+                return "not(" + matcher + ")";
             }
         };
     }

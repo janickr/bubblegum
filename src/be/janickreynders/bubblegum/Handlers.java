@@ -30,6 +30,11 @@ public class Handlers {
             public void handle(Request req, Response resp) throws Exception {
                 resp.status(httpStatusCode);
             }
+
+            @Override
+            public String toString() {
+                return "http status " + httpStatusCode;
+            }
         };
     }
 
@@ -39,6 +44,11 @@ public class Handlers {
             public void handle(Request req, Response resp) throws Exception {
                 req.forward(url, resp);
             }
+
+            @Override
+            public String toString() {
+                return "forward to " + url;
+            }
         };
     }
 
@@ -47,6 +57,11 @@ public class Handlers {
             @Override
             public void handle(Request req, Response resp) throws Exception {
                 resp.redirect(url);
+            }
+
+            @Override
+            public String toString() {
+                return "redirect to " + url;
             }
         };
     }

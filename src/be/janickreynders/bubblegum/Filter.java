@@ -24,5 +24,5 @@
 package be.janickreynders.bubblegum;
 
 public interface Filter {
-    public void handle(Request req, Response resp, Chain chain) throws Exception;
+    void handle(Request req, Response resp, Chain chain) throws Exception;
 }

@@ -27,15 +27,21 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.lang.Boolean.TRUE;
 
 public class Bubblegum implements javax.servlet.Filter {
+    private static Logger LOG = Logger.getLogger(Bubblegum.class.getName());
     private Config config;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        config = getRoutes(filterConfig).createConfig();
+        App routes = getRoutes(filterConfig);
+
+        LOG.log(Level.INFO, "App.createConfig");
+        config = routes.createConfig();
     }
 
     @Override
@@ -78,10 +84,12 @@ public class Bubblegum implements javax.servlet.Filter {
 
 
     protected App getRoutes(FilterConfig filterConfig) throws ServletException {
+        LOG.log(Level.INFO, "Reading filterconfig");
         try {
             String name = filterConfig.getInitParameter("app");
             return (App) Class.forName(name).newInstance();
         } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error creating App", e);
             throw new ServletException(e);
         }
     }

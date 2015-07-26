@@ -27,11 +27,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static be.janickreynders.bubblegum.Filters.handler;
 import static be.janickreynders.bubblegum.Matchers.*;
 
 public class Config {
+    private static Logger LOG = Logger.getLogger(Config.class.getName());
     private LinkedList<Route> filters = new LinkedList<Route>();
     private List<Route> handlers = new ArrayList<Route>();
 
@@ -59,19 +62,19 @@ public class Config {
     }
 
     public void get(String path, Handler handler) {
-        get(path, all(), handler);
+        get(path, null, handler);
     }
 
     public void put(String path, Handler handler) {
-        put(path, all(), handler);
+        put(path, null, handler);
     }
 
     public void delete(String path, Handler handler) {
-        delete(path, all(), handler);
+        delete(path, null, handler);
     }
 
     public void post(String path, Handler handler) {
-        post(path, all(), handler);
+        post(path, null, handler);
     }
 
     public void get(String path, RequestMatcher matcher, Handler handler) {
@@ -100,6 +103,7 @@ public class Config {
 
     public void route(RequestMatcher matcher, Handler handler) {
         handlers.add(new Route(matcher, handler(handler)));
+        log(matcher, handler);
     }
 
     public void apply(String route, RequestMatcher matcher, Filter filter) {
@@ -107,7 +111,7 @@ public class Config {
     }
 
     public void apply(String path, Filter filter) {
-        apply(path, all(), filter);
+        apply(path, null, filter);
     }
 
     public void apply(Filter filter) {
@@ -116,5 +120,22 @@ public class Config {
 
     public void apply(RequestMatcher matcher, Filter filter) {
         filters.add(new Route(matcher, filter));
+        log(matcher, filter);
     }
+
+    private void log(RequestMatcher matcher, Object filterOrHandler) {
+        if (LOG.isLoggable(Level.INFO)) {
+            LOG.log(Level.INFO, "{0} -> {1}", new Object[] {matcher, callToString(filterOrHandler)});
+        }
+    }
+
+    private String callToString(Object filterOrHandler) {
+        try {
+            filterOrHandler.getClass().getDeclaredMethod("toString");
+            return filterOrHandler.toString();
+        } catch (NoSuchMethodException e) {
+            return filterOrHandler.getClass().getName();
+        }
+    }
+
 }

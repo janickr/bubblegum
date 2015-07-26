@@ -119,4 +119,8 @@ public class ConnectionProvider implements Filter {
         return holder != null && holder.getConnection() == connection && connection != null;
     }
 
+    @Override
+    public String toString() {
+        return "ConnectionProvider";
+    }
 }

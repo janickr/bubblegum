@@ -50,6 +50,11 @@ public class Filters {
                         throw e;
                 }
             }
+
+            @Override
+            public String toString() {
+                return "catchAndHandle: " + clazz.getSimpleName() + " -> " + handler;
+            }
         };
     }
 
@@ -60,8 +65,14 @@ public class Filters {
                 resp.header(name, value);
                 chain.handle(req, resp);
             }
+
+            @Override
+            public String toString() {
+                return name + ": " + value;
+            }
         };
     }
+
 
     public static Filter charset(final String charset) {
         return new Filter() {
@@ -69,6 +80,11 @@ public class Filters {
             public void handle(Request req, Response resp, Chain chain) throws Exception {
                 resp.raw().setCharacterEncoding(charset);
                 chain.handle(req, resp);
+            }
+
+            @Override
+            public String toString() {
+                return "charset=" + charset;
             }
         };
     }
@@ -80,6 +96,11 @@ public class Filters {
                 resp.contentType(contentType);
                 chain.handle(req, resp);
             }
+
+            @Override
+            public String toString() {
+                return "Content-Type: " + contentType;
+            }
         };
     }
 
@@ -89,6 +110,11 @@ public class Filters {
             public void handle(Request req, Response resp, Chain chain) throws Exception {
                 resp.header("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
                 chain.handle(req, resp);
+            }
+
+            @Override
+            public String toString() {
+                return "neverCache";
             }
         };
     }
@@ -118,6 +144,11 @@ public class Filters {
                 format.setTimeZone(TimeZone.getTimeZone("GMT"));
                 return format.format(date);
             }
+
+            @Override
+            public String toString() {
+                return "cacheNeverExpires";
+            }
         };
     }
 
@@ -127,6 +158,11 @@ public class Filters {
             public void handle(Request req, Response resp, Chain chain) throws Exception {
                 resp.vary(requestHeaders);
                 chain.handle(req, resp);
+            }
+
+            @Override
+            public String toString() {
+                return "Vary: "+ requestHeaders;
             }
         };
     }

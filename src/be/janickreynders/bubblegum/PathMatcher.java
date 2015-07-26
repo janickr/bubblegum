@@ -34,9 +34,11 @@ import java.util.regex.Pattern;
 public class PathMatcher extends RequestMatcher {
     private final List<String> paramNames;
     private final Pattern pattern;
+    private final String path;
 
 
     public PathMatcher(String route) {
+        this.path = route;
         this.paramNames = getParamNames(route);
         this.pattern = createPattern(route);
     }
@@ -64,4 +66,8 @@ public class PathMatcher extends RequestMatcher {
         return Match.match(params);
     }
 
+    @Override
+    public String toString() {
+        return "path: " + path;
+    }
 }
