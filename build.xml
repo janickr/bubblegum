@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<project name="bubblegum" default="dist" basedir=".">
+
+    <path id="compileSrcClassPath" description="Jar files necessary to compile the project">
+        <fileset dir="lib/compile" includes="**/*.jar"/>
+    </path>
+
+    <path id="compileTestClassPath" description="Jar files necessary to test the project">
+        <fileset dir="lib/test" includes="**/*.jar"/>
+        <pathelement location="build/src/classes"/>
+        <path refid="compileSrcClassPath"/>
+    </path>
+
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+
+    <target name="dist" depends="jar, sources"/>
+
+    <target name="jar" depends="clean, classes, resources">
+        <jar destfile="build/bubblegum.jar" basedir="build/src/classes"/>
+    </target>
+
+    <target name="sources" depends="clean, classes, resources">
+        <zip destfile="build/bubblegum-sources.zip" basedir="src"/>
+    </target>
+
+    <target name="classes">
+        <mkdir dir="build/src/classes"/>
+        <javac classpathref="compileSrcClassPath" srcdir="src" destdir="build/src/classes"
+               debug="true" debuglevel="lines,vars,source" includeantruntime="false"
+               source="1.6" target="1.6"/>
+    </target>
+
+    <target name="testclasses">
+        <mkdir dir="build/test/classes"/>
+        <javac classpathref="compileTestClassPath" srcdir="test" destdir="build/test/classes"
+               debug="true" debuglevel="lines,vars,source" includeantruntime="false"
+               source="1.6" target="1.6"/>
+    </target>
+
+    <target name="resources">
+        <copy todir="build/src/classes">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+</project>
