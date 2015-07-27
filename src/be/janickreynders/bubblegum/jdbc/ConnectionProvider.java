@@ -56,7 +56,6 @@ public class ConnectionProvider implements Filter {
         try {
             ConnectionHolder holder = transactionalConnection.get();
             if (hasConnection(holder) && !holder.getConnection().isClosed()) {
-                holder.getConnection().setAutoCommit(true);
                 holder.getConnection().close();
             }
         } catch (Exception ignore) {
@@ -70,15 +69,15 @@ public class ConnectionProvider implements Filter {
         ConnectionHolder holder = transactionalConnection.get();
         try {
             if (holder != null) {
-                if (holder.getConnection() != null) return holder.getConnection();
-                Connection newConnection = ds.getConnection();
-                newConnection.setAutoCommit(false);
-                holder.setConnection(newConnection);
-                return newConnection;
+                if (holder.getConnection() != null) {
+                    return holder.getConnection();
+                } else {
+                    Connection newConnection = ds.getConnection();
+                    holder.setConnection(newConnection);
+                    return newConnection;
+                }
             } else {
-                Connection connection = ds.getConnection();
-                connection.setAutoCommit(true);
-                return connection;
+                return ds.getConnection();
             }
         } catch (SQLException e) {
             throw new JdbcException(e);
