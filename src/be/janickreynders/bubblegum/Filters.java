@@ -29,12 +29,7 @@ import java.util.*;
 public class Filters {
 
     public static Filter handler(final Handler handler) {
-        return new Filter() {
-            @Override
-            public void handle(Request req, Response resp, Chain chain) throws Exception {
-                handler.handle(req, resp);
-            }
-        };
+        return (req, resp, chain) -> handler.handle(req, resp);
     }
 
     public static Filter catchAndHandle(final Class<? extends Exception> clazz, final Handler handler) {

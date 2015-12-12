@@ -29,12 +29,7 @@ public class TestApp implements App {
     public Config createConfig() {
         Config on = new Config();
 
-        on.get("/hello/:name", new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                resp.ok("Hello " + req.param("name") + "!");
-            }
-        });
+        on.get("/hello/:name", (req, resp) -> resp.ok("Hello " + req.param("name") + "!"));
 
         return on;
     }
@@ -80,6 +75,7 @@ More Examples
 -------------
 
 ```java
+
 import be.janickreynders.bubblegum.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -113,76 +109,48 @@ public class Examples implements App {
         on.get("/redirect/me", redirect("/redirected"));
 
         // using a path variable
-        on.get("/collection/:id", new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                resp.ok("you requested: " + req.param("id"));
-            }
-        });
+        on.get("/collection/:id", (req, resp) -> resp.ok("you requested: " + req.param("id")));
 
         // set the content type of the response
-        on.get("/textcontent", new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                resp.type("text/plain");
-                resp.ok("You are getting a text response");
-            }
+        on.get("/textcontent", (req, resp) -> {
+            resp.contentType("text/plain");
+            resp.ok("You are getting a text response");
         });
 
         // post to a url
-        on.post("/collection", new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                String value = req.param("inputFieldName");
+        on.post("/collection", (req, resp) -> {
+            String value = req.param("inputFieldName");
 
-                resp.ok("you posted: " + value);
-            }
+            resp.ok("you posted: " + value);
         });
 
         // another http method
-        on.delete("/collection/:id", new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                resp.ok("you deleted: " + req.param("id"));
-            }
-        });
+        on.delete("/collection/:id", (req, resp) -> resp.ok("you deleted: " + req.param("id")));
 
 
         // different response for different request Accept headers
-        on.get("/variant", accept("text/html"), new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                resp.vary("Accept");
-                resp.ok("<html><body> This is the html variant </body></html>");
-            }
+        on.get("/variant", accept("text/html"), (req, resp) -> {
+            resp.vary("Accept");
+            resp.ok("<html><body> This is the html variant </body></html>");
         });
 
-        on.get("/variant", accept("application/json"), new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                resp.vary("Accept");
-                resp.ok("{ \"message\": \"This is the json variant\" }");
-            }
+        on.get("/variant", accept("application/json"), (req, resp) -> {
+            resp.vary("Accept");
+            resp.ok("{ \"message\": \"This is the json variant\" }");
         });
 
         // interpreting different request body content types
-        on.get("/requestbody", contentType("application/x-www-form-urlencoded"), new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                // get params with req.param();
-            }
+        on.get("/requestbody", Matchers.contentType("application/x-www-form-urlencoded"), (req, resp) -> {
+            // get params with req.param();
         });
 
-        on.get("/requestbody", contentType("application/json"), new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                // parse the json in req.body()
-            }
+        on.get("/requestbody", Matchers.contentType("application/json"), (req, resp) -> {
+            // parse the json in req.body()
         });
 
         // match multiple http methods, and return a status code
         on.route("/multiple-methods", any(method("post"), method("put"), method("delete")),
-            status(HttpServletResponse.SC_FORBIDDEN));
+                status(HttpServletResponse.SC_FORBIDDEN));
 
 
         /********************** filter examples **********************/
@@ -227,42 +195,30 @@ public class JdbcExample implements App {
         Config on = new Config();
 
         on.apply(new ConnectionProvider()); // ConnectionProvider is a filter that returns the same open connection during your request
-                      // It will commit your transaction after the request and closes the connection
+        // It will commit your transaction after the request and closes the connection
 
-        on.post("/insertSomething", accept("text/html"), new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                String value1 = req.param("inputFieldName1");
-                String value2 = req.param("inputFieldName2");
-                db.update("insert into my_table (value1, value2) values (?, ?)", value1, value2);
+        on.post("/insertSomething", accept("text/html"), (req, resp) -> {
+            String value1 = req.param("inputFieldName1");
+            String value2 = req.param("inputFieldName2");
+            db.update("insert into my_table (value1, value2) values (?, ?)", value1, value2);
 
-                resp.ok("you inserted: " + value1 + " and " + value2);
-            }
+            resp.ok("you inserted: " + value1 + " and " + value2);
         });
 
-        on.get("/queryValue2/:value1", accept("text/html"), new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                String value1 = req.param("value1");
-                String value2 = db.getString("select value2 from my_table where value1 = ?", value1);
+        on.get("/queryValue2/:value1", accept("text/html"), (req, resp) -> {
+            String value1 = req.param("value1");
+            String value2 = db.getString("select value2 from my_table where value1 = ?", value1);
 
-                resp.ok(value2);
-            }
+            resp.ok(value2);
         });
 
-        on.post("/doSomethingAsynchronousInOneTransaction", accept("text/html"), new Handler() {
-            @Override
-            public void handle(Request req, Response resp) throws Exception {
-                executor.execute(withDbConnection(new Runnable() {
-                    @Override
-                    public void run() {
-                        db.update("insert into this_table (some_col) values (?)", "one thing");
-                        db.update("insert into that_table (some_col) values (?)", "another thing");
-                    }
-                }));
+        on.post("/doSomethingAsynchronousInOneTransaction", accept("text/html"), (req, resp) -> {
+            executor.execute(withDbConnection(() -> {
+                db.update("insert into this_table (some_col) values (?)", "one thing");
+                db.update("insert into that_table (some_col) values (?)", "another thing");
+            }));
 
-                resp.ok("it's running");
-            }
+            resp.ok("it's running");
         });
 
         return on;

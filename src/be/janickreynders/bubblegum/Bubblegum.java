@@ -48,11 +48,7 @@ public class Bubblegum implements javax.servlet.Filter {
     public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain filterChain) throws IOException, ServletException {
         try {
             handle(servletRequest, servletResponse, filterChain);
-        } catch (IOException e) {
-            throw e;
-        } catch (ServletException e) {
-            throw e;
-        } catch (RuntimeException e) {
+        } catch (IOException | ServletException | RuntimeException e) {
             throw e;
         } catch (Exception e) {
             throw new ServletException(e);
@@ -74,12 +70,7 @@ public class Bubblegum implements javax.servlet.Filter {
     }
 
     private Chain toChain(final FilterChain filterChain) {
-        return new Chain(new Filter() {
-                            @Override
-                            public void handle(Request req, Response resp, Chain chain) throws Exception {
-                                filterChain.doFilter(req.raw(), resp.raw());
-                            }
-                         }, null, null);
+        return new Chain((req, resp, chain) -> filterChain.doFilter(req.raw(), resp.raw()), null, null);
     }
 
 

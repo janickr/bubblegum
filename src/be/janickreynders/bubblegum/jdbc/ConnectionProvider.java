@@ -85,21 +85,18 @@ public class ConnectionProvider implements Filter {
     }
 
     public static Runnable withDbConnection(final Runnable r) {
-        return new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    transactionalConnection.set(new ConnectionHolder());
-                    r.run();
-                    commit();
-                } catch (RuntimeException e) {
-                    rollbackQuietly();
-                    throw e;
-                } catch (SQLException e) {
-                    throw new JdbcException(e);
-                } finally {
-                    closeQuietly();
-                }
+        return () -> {
+            try {
+                transactionalConnection.set(new ConnectionHolder());
+                r.run();
+                commit();
+            } catch (RuntimeException e) {
+                rollbackQuietly();
+                throw e;
+            } catch (SQLException e) {
+                throw new JdbcException(e);
+            } finally {
+                closeQuietly();
             }
         };
     }

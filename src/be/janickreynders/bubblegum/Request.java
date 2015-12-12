@@ -101,7 +101,7 @@ public class Request {
     }
 
     public Set<String> queryParams() {
-        return new HashSet<String>(req.getParameterMap().keySet());
+        return new HashSet<>(req.getParameterMap().keySet());
     }
 
     public String queryParam(String name) {
