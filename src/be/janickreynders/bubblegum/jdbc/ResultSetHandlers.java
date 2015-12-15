@@ -54,7 +54,7 @@ public class ResultSetHandlers {
         return rs -> {
             if (!rs.next()) return null;
 
-            return (T) rs.getObject(1);
+            return clazz.cast(rs.getObject(1));
         };
     }
 
@@ -62,7 +62,7 @@ public class ResultSetHandlers {
         return rs -> {
             List<T> result = new ArrayList<>();
             while (rs.next()) {
-                result.add((T) rs.getObject(1));
+                result.add(clazz.cast(rs.getObject(1)));
             }
 
             return result;

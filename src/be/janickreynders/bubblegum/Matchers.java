@@ -82,7 +82,7 @@ public class Matchers {
     }
 
     private static List<RequestMatcher> withoutNulls(RequestMatcher... matchers) {
-        ArrayList<RequestMatcher> noNulls = new ArrayList<RequestMatcher>(matchers.length);
+        ArrayList<RequestMatcher> noNulls = new ArrayList<>(matchers.length);
         for (RequestMatcher matcher : matchers) {
             if (matcher != null) {
                 noNulls.add(matcher);
@@ -98,7 +98,7 @@ public class Matchers {
         return new RequestMatcher() {
             @Override
             public Match matches(Request req) {
-                Map<String, String> params = new HashMap<String, String>();
+                Map<String, String> params = new HashMap<>();
 
                 for (RequestMatcher matcher : matchers) {
                     Match match = matcher.matches(req);
@@ -125,7 +125,7 @@ public class Matchers {
         return new RequestMatcher() {
             @Override
             public Match matches(Request req) {
-                Map<String, String> params = new HashMap<String, String>();
+                Map<String, String> params = new HashMap<>();
                 boolean isMatch = false;
 
                 for (RequestMatcher matcher : matchers) {

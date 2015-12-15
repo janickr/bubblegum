@@ -42,7 +42,7 @@ public class Request {
     }
 
     public Request(HttpServletRequest req) {
-        this(req, new HashMap<String, String>());
+        this(req, new HashMap<>());
     }
 
     void setMatchParams(Map<String, String> params) {
